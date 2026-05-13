@@ -1,0 +1,188 @@
+---
+import OtoLayout from '../layouts/OtoLayout.astro';
+import Comparison from '../components/Comparison.astro';
+import OrderStack from '../components/OrderStack.astro';
+
+const briefBullets = [
+  'Audience pain map — 3–5 distinct buyer archetypes',
+  'Hook architecture — the framework behind each ad',
+  'Format mix — which creative type does which job',
+  'Test-matrix recommendation for week 1',
+  '10–15 page PDF, founder-narrated voice memo included',
+];
+
+const videoBullets = [
+  'AI-generated UGC style — hook + setup + product showcase + CTA, full arc',
+  '9:16 vertical (Reels / Stories), 15–30 seconds each',
+  'MP4 delivered, ready to upload to Ads Manager directly',
+  'No creators to schedule, no scripts to shoot, nothing to film',
+  'Same senior-buyer review pass as the statics',
+];
+---
+<OtoLayout
+  title="forty8 — add brief + 3 videos ($9.99)"
+  description="The strategic doc behind your creatives, plus 3 ready-to-publish UGC videos."
+  step={3}
+  skipHref="/oto3"
+>
+
+  <div class="space-y-10 md:space-y-12">
+
+    <OrderStack activeId="oto2" />
+
+    {/* HERO */}
+    <section>
+      <div class="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+        <span class="rounded-full px-2 py-1 ring-1" style="background: var(--card); --tw-ring-color: var(--border-strong);">OTO 2 / 3</span>
+        <span>One-click add</span>
+      </div>
+
+      <h1
+        class="mt-5 font-display font-semibold tracking-[-0.035em] leading-[0.96] text-balance text-[32px] sm:text-[42px] md:text-[52px]"
+        style="color: var(--fg);"
+      >
+        Add the full creative brief
+        <span class="block" style="color: var(--accent);">+ 3 ready-to-publish videos?</span>
+      </h1>
+
+      <p class="mt-4 md:mt-5 text-[16.5px] md:text-[18px] max-w-[55ch] text-pretty" style="color: var(--fg-mute);">
+        One-click add. <strong style="color: var(--fg);" class="font-semibold">+$9.99</strong> to your order.
+        The strategy doc behind your 50 creatives, plus 3 finished UGC-style videos —
+        9:16 vertical (Reels &amp; Stories), 15–30 seconds, ready to upload straight to Ads Manager.
+      </p>
+    </section>
+
+    {/* What's inside — 2 cards */}
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+      <div class="rounded-2xl ring-1 p-5 md:p-6" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+        <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--accent);">Creative brief</div>
+        <h3 class="mt-2 font-display font-semibold text-[18px] md:text-[20px] tracking-[-0.015em] leading-snug" style="color: var(--fg);">
+          The strategic doc that drives the 50.
+        </h3>
+        <ul class="mt-4 space-y-2.5 text-[13.5px] md:text-[14px] leading-snug" style="color: var(--fg-mute);">
+          {briefBullets.map((b) => (
+            <li class="flex gap-2.5">
+              <span class="mt-[7px] block size-1 rounded-full shrink-0" style="background: var(--fg-faint);"></span>
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="rounded-2xl ring-1 p-5 md:p-6" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+        <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--accent);">3 ready-to-publish videos</div>
+        <h3 class="mt-2 font-display font-semibold text-[18px] md:text-[20px] tracking-[-0.015em] leading-snug" style="color: var(--fg);">
+          9:16 vertical, 15–30s, finished MP4s.
+        </h3>
+        <ul class="mt-4 space-y-2.5 text-[13.5px] md:text-[14px] leading-snug" style="color: var(--fg-mute);">
+          {videoBullets.map((b) => (
+            <li class="flex gap-2.5">
+              <span class="mt-[7px] block size-1 rounded-full shrink-0" style="background: var(--fg-faint);"></span>
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    {/* Comparison */}
+    <section>
+      <h2 class="font-display font-semibold text-[22px] md:text-[26px] tracking-[-0.015em] mb-4 md:mb-5" style="color: var(--fg);">
+        Statics only · vs · statics + brief + videos.
+      </h2>
+      <Comparison
+        skip={{
+          kicker: 'Statics only',
+          title: '50 ad units. No backstory.',
+          price: 'Already in your order',
+          bullets: [
+            'You see the creatives — not the thinking behind them',
+            'Your UGC creator has nothing concrete to shoot',
+            'Next refresh restarts the brief from zero',
+          ],
+        }}
+        recommended={{
+          kicker: '+ Brief + 3 videos',
+          title: 'Same batch, with the strategy doc + finished videos.',
+          price: '+$9.99 one-time · charged to card on file',
+          bullets: [
+            '10–15 page brief explaining every angle in the 50',
+            '3 finished 9:16 vertical videos — upload to Ads Manager today',
+            "Voice memo from us — the buyer's narration of the brief",
+            'Reusable on the next refresh — saves a brief cycle',
+          ],
+        }}
+      />
+    </section>
+
+    {/* Math anchor */}
+    <section class="rounded-2xl ring-1 p-5 md:p-7" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+      <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-3" style="color: var(--fg-faint);">
+        What this costs elsewhere
+      </div>
+      <div class="grid grid-cols-3 gap-3 md:gap-5">
+        <div>
+          <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg-dim);">$1–3K</div>
+          <div class="mt-2 text-[12px] leading-snug" style="color: var(--fg-dim);">agency creative brief, week 2–4 turnaround</div>
+        </div>
+        <div>
+          <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg-dim);">$177+</div>
+          <div class="mt-2 text-[12px] leading-snug" style="color: var(--fg-dim);">3 finished UGC videos at Billo (~$59 each)</div>
+        </div>
+        <div>
+          <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--accent);">$9.99</div>
+          <div class="mt-2 text-[12px] leading-snug" style="color: var(--fg-dim);">forty8 brief + 3 finished videos · ships today</div>
+        </div>
+      </div>
+    </section>
+
+    {/* CTA */}
+    <section>
+      <div class="space-y-2">
+        {/* LS checkout overlay — uses card from OTO1 if available, else fresh checkout */}
+        <a
+          href="https://forty8.co/checkout/buy/c7bc94aa-cb89-48ac-af0c-dff8739d7edf"
+          class="lemonsqueezy-button flex w-full items-center justify-center gap-2.5 rounded-2xl font-display font-medium text-[16px] md:text-[17px] py-4 md:py-[18px] transition-transform hover:-translate-y-[1px] active:translate-y-0"
+          style="background: var(--accent); color: var(--on-accent); box-shadow: 0 14px 40px -14px var(--accent);"
+        >
+          Add brief + 3 videos · +$9.99
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+            <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+          </svg>
+        </a>
+        <div class="text-center text-[12px] leading-snug" style="color: var(--fg-faint);">
+          One-click add. Card on file. No new checkout. You'll get the brief in the same delivery email.
+        </div>
+      </div>
+
+      <a
+        href="/oto3"
+        class="block w-full text-center text-[13px] underline underline-offset-4 transition-colors mt-4"
+        style="color: var(--fg-dim);"
+        onmouseover="this.style.color='var(--fg)'"
+        onmouseout="this.style.color='var(--fg-dim)'"
+      >
+        No thanks — keep the 50 statics only
+      </a>
+    </section>
+
+  </div>
+
+  {/* Mobile-only sticky bottom bar — Pay CTA always one tap away */}
+  <div
+    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 py-3"
+    style="background: var(--bg-scrim); border-color: var(--border);"
+  >
+    <a
+      href="https://forty8.co/checkout/buy/c7bc94aa-cb89-48ac-af0c-dff8739d7edf"
+      class="lemonsqueezy-button flex w-full items-center justify-center gap-2 rounded-xl font-display font-medium text-[15px] py-3.5 transition-transform active:translate-y-[1px]"
+      style="background: var(--accent); color: var(--on-accent); box-shadow: 0 6px 24px -8px var(--accent);"
+    >
+      Add brief + 3 videos · +$9.99
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+        <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+      </svg>
+    </a>
+  </div>
+
+</OtoLayout>

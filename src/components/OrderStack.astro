@@ -1,0 +1,77 @@
+---
+// Renders the "Your order so far" stack — 3 cells showing OTO1/OTO2/OTO3 state.
+// `activeId` is the current page ('oto2' or 'oto3'). Earlier steps render as added (green check),
+// the active step shows orange ring, later steps render as upcoming (muted).
+
+interface Props {
+  activeId: 'oto2' | 'oto3';
+}
+
+const STEPS = [
+  { id: 'oto1', step: 1, label: 'Upgrade · 50 creatives',     priceLabel: '$9.99'  },
+  { id: 'oto2', step: 2, label: 'Brief + 3 videos',            priceLabel: '+$9.99' },
+  { id: 'oto3', step: 3, label: 'Founder Account Audit',       priceLabel: '+$97'   },
+];
+
+const { activeId } = Astro.props;
+const activeIdx = STEPS.findIndex((s) => s.id === activeId);
+// Running total = sum of items at indexes < activeIdx (already added)
+const runningTotal = STEPS.slice(0, activeIdx).reduce((acc, s) => {
+  const n = Number(s.priceLabel.replace(/[^0-9.]/g, ''));
+  return acc + (isFinite(n) ? n : 0);
+}, 0);
+---
+<div
+  class="rounded-2xl ring-1 p-3 md:p-4"
+  style="background: var(--bg-elev); --tw-ring-color: var(--border);"
+>
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+      Your order so far
+    </div>
+    <div class="font-mono text-[11px]" style="color: var(--fg-dim);">
+      <span style="color: var(--fg-faint);">running total · </span>
+      <span style="color: var(--fg);" class="font-medium">${runningTotal.toFixed(2)}</span>
+    </div>
+  </div>
+
+  <ol class="grid grid-cols-3 gap-1.5 md:gap-2">
+    {STEPS.map((s, i) => {
+      const isAdded = i < activeIdx;
+      const isActive = s.id === activeId;
+      return (
+        <li
+          class="relative rounded-lg p-2.5 md:p-3 border transition-colors"
+          style={`
+            background: ${isActive ? 'var(--card-elev)' : isAdded ? 'var(--card)' : 'transparent'};
+            border-color: ${isActive ? 'color-mix(in oklch, var(--accent) 60%, transparent)' : 'var(--border)'};
+            ${isActive ? 'box-shadow: 0 0 0 1px color-mix(in oklch, var(--accent) 50%, transparent);' : ''}
+          `}
+        >
+          <div
+            class="flex items-center gap-1.5 font-mono text-[9.5px] uppercase tracking-[0.14em]"
+            style={`color: ${isAdded ? 'var(--positive)' : isActive ? 'var(--accent)' : 'var(--fg-faint)'};`}
+          >
+            {isAdded ? (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                <path d="M1.5 5.5l2.5 2.5L9 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+              </svg>
+            ) : (
+              <span
+                class="size-2 rounded-full ring-1"
+                style={`background: ${isActive ? 'var(--accent)' : 'transparent'}; border-color: ${isActive ? 'var(--accent)' : 'var(--border-strong)'};`}
+              ></span>
+            )}
+            <span>Step {s.step}</span>
+          </div>
+          <div class="mt-1.5 text-[12px] md:text-[13px] leading-tight font-medium" style="color: var(--fg);">
+            {s.label}
+          </div>
+          <div class="mt-0.5 font-mono text-[11px]" style="color: var(--fg-faint);">
+            {isAdded ? `added · ${s.priceLabel}` : isActive ? `this step · ${s.priceLabel}` : s.priceLabel}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+</div>

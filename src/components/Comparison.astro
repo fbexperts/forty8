@@ -1,0 +1,88 @@
+---
+interface Side {
+  kicker: string;
+  title: string;
+  price?: string;
+  bullets: string[];
+}
+interface Props {
+  skip: Side;
+  recommended: Side;
+}
+const { skip, recommended } = Astro.props;
+---
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+
+  {/* SKIP — muted */}
+  <div
+    class="rounded-2xl ring-1 p-5 md:p-6 relative"
+    style="background: var(--bg-elev); --tw-ring-color: var(--border);"
+  >
+    <div
+      class="font-mono text-[10.5px] uppercase tracking-[0.14em]"
+      style="color: var(--fg-faint);"
+    >
+      {skip.kicker}
+    </div>
+    <h3
+      class="mt-1 font-display font-semibold text-[22px] md:text-[24px] tracking-[-0.015em]"
+      style="color: var(--fg-dim);"
+    >
+      {skip.title}
+    </h3>
+    {skip.price && (
+      <div class="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em]" style="color: var(--fg-faint);">
+        {skip.price}
+      </div>
+    )}
+    <ul class="mt-5 space-y-2.5 text-[14px] leading-snug" style="color: var(--fg-dim);">
+      {skip.bullets.map((b) => (
+        <li class="flex gap-2.5">
+          <span class="mt-[7px] block size-1 rounded-full shrink-0" style="background: var(--border-strong);"></span>
+          <span>{b}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* RECOMMENDED — accent-tinted, glow, "Pick this" pill */}
+  <div
+    class="rounded-2xl p-5 md:p-6 relative ring-1"
+    style="background: color-mix(in oklch, var(--accent) 5%, var(--bg-elev)); box-shadow: 0 0 0 1px var(--accent), 0 30px 80px -40px var(--accent);"
+  >
+    <div class="flex items-center justify-between">
+      <div
+        class="font-mono text-[10.5px] uppercase tracking-[0.14em]"
+        style="color: var(--accent);"
+      >
+        {recommended.kicker}
+      </div>
+      <span
+        class="font-mono text-[10px] uppercase tracking-[0.14em] rounded-full px-2 py-0.5"
+        style="color: var(--accent); border: 1px solid color-mix(in oklch, var(--accent) 45%, transparent);"
+      >
+        Pick this
+      </span>
+    </div>
+    <h3
+      class="mt-1 font-display font-semibold text-[22px] md:text-[24px] tracking-[-0.015em]"
+      style="color: var(--fg);"
+    >
+      {recommended.title}
+    </h3>
+    {recommended.price && (
+      <div class="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em]" style="color: var(--accent);">
+        {recommended.price}
+      </div>
+    )}
+    <ul class="mt-5 space-y-2.5 text-[14px] leading-snug" style="color: var(--fg);">
+      {recommended.bullets.map((b) => (
+        <li class="flex gap-2.5">
+          <span class="mt-[7px] block size-1.5 rounded-full shrink-0" style="background: var(--accent);"></span>
+          <span>{b}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+</div>

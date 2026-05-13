@@ -1,0 +1,1058 @@
+---
+import '../styles/global.css';
+import { gallery } from '../data/gallery';
+
+// ---- Data (locked copy from BRIEF.md, mirrored from design/redesign.jsx) ----
+
+const WHAT_YOU_GET = [
+  { title: '10 fully-rendered ad creatives', body: '4:5 portrait — the only static format Meta is actually rewarding in 2026.' },
+  { title: 'Built around YOUR product',      body: 'YOUR audience, YOUR positioning. You give us a store URL and 3 short answers. We do the rest.' },
+  { title: 'Hook + topic + mechanic + CTA on every frame', body: 'The senior-buyer checklist. Not "make it pop."' },
+  { title: 'A real range of angles',         body: "No cosmetic variations dressed up as 10 ads. Andromeda will cluster those. We don't ship them." },
+  { title: 'Ready to upload to Ads Manager', body: 'Delivered as PNGs, named, organized.' },
+  { title: '48 hours, guaranteed',           body: 'Most orders ship in under 24. Refund if we miss.' },
+];
+
+const COMPARE = [
+  { row: 'Output speed',         ai: 'Minutes',              agency: '1–4 weeks',              forty8: '48 hours' },
+  { row: 'Quality control',      ai: 'Templating engine',    agency: "Varies by who's on shift", forty8: 'Senior-buyer reviewed' },
+  { row: 'Physical-product DTC', ai: 'Documented blind spot', agency: 'Often fine',             forty8: 'Native' },
+  { row: 'Entry cost',           ai: '$189–$399/mo',         agency: '$1K–$10K+/mo + setup',   forty8: '$0, no card' },
+  { row: 'Risk',                 ai: 'Trial-to-charge traps', agency: '3-month contracts',     forty8: 'Refund if we miss 48h' },
+  { row: 'Cadence',              ai: 'On-demand, single seat', agency: 'Once/month, slow rounds', forty8: 'Weekly retainer option' },
+];
+
+const VOICE_QUOTES = [
+  { src: 'r/FacebookAds · u/SeniorHeat221', q: 'My winning ads used to last a month. Now they fatigue in a few days. Impossible to keep up without a massive design budget.' },
+  { src: 'Nest Commerce · agency blog',     q: "You can't out-target the algorithm. You can out-supply it." },
+  { src: 'AdCreative.ai review · Sean C.',  q: 'The product is like using templates from the 1990s. Really really bad.' },
+];
+
+const DASHBOARD_ROWS = [
+  { tag: 'Premium haircare', spend: '$24.6M', roas: '5.14×' },
+  { tag: 'Apparel DTC',      spend: '$18.2M', roas: '4.51×' },
+  { tag: 'Outdoor gear',     spend: '$15.9M', roas: '7.96×' },
+  { tag: 'Electronics DTC',  spend: '$12.4M', roas: '3.27×' },
+  { tag: 'Beauty DTC',       spend: '$11.0M', roas: '2.75×' },
+  { tag: 'Social casino',    spend: '$18.7M', roas: '—'     },
+];
+
+const EMAIL_THUMBS = [
+  'scalp-serum', 'sleep-drink', 'phone-charger', 'kitchen-knife', 'hiking-boots',
+  'headphones',  'coffee-beans', 'oral-care',    'baby-food',     'sneakers',
+];
+
+const FAQS = [
+  { q: "What's the catch with $0?",
+    a: "No catch. You enter your details, we ship 10 creatives in 48 hours. After delivery you'll see optional upgrades. You're never charged unless you choose one." },
+  { q: 'Is this AI-generated slop dressed up as a real service?',
+    a: "AI is used the same way an agency uses Photoshop — as a tool, not the deliverable. A senior Meta buyer reviews every creative before it ships. If it's not work I'd run on my own accounts, it doesn't ship." },
+  { q: 'My niche is supplements / apparel / skincare / pet / other physical product. Does this work?',
+    a: "Yes — physical products are the home turf. Most AI creative tools choke on physical goods (they're trained on digital products). forty8 is built for DTC ecom specifically." },
+  { q: 'What format do I get?',
+    a: 'Static creatives delivered as 4:5 portrait PNGs — the only static format Meta gets full reach on in 2026. Ready-to-publish videos (9:16 vertical MP4s for Reels & Stories, 15–30 seconds) are an optional add-on after delivery.' },
+  { q: 'How is this different from Fiverr?',
+    a: "Fiverr is fine for one-off angle tests at $50/video. forty8 is the production layer for the 10–50/week cadence Meta now requires. Different problem." },
+  { q: "I'm already with an agency. Why try this?",
+    a: "Most agencies ship 4–8 creatives per month. The math doesn't work in 2026. Run forty8 in parallel with your agency for a month — see whose 10 creatives convert better. The free tier exists for exactly this comparison." },
+  { q: 'What happens to my store data and product info?',
+    a: 'Used only to produce your creatives. Not sold, not shared with anyone, not used to train external AI models. Standard NDA available on request before delivery.' },
+  { q: 'What if you miss the 48-hour delivery?',
+    a: "Full refund. No questions. The 48 hours is the contract — that's why we put it in the brand name." },
+  { q: 'Is this just for big brands?',
+    a: 'No. The free tier exists so brands of any size can test the work. Most paying customers are running $50K–$500K/mo on Meta, but the free 10 are useful at any spend.' },
+];
+
+// SparkChart SVG path computation
+const W = 320, H = 90;
+const CPA_PTS = [62, 58, 55, 51, 47, 44, 40, 36, 33, 30, 28, 28];
+const ROAS_PTS = [22, 28, 30, 36, 42, 48, 55, 62, 68, 74, 80, 84];
+const toPath = (arr: number[]) => arr.map((v, i) => {
+  const x = (i / (arr.length - 1)) * W;
+  const y = H - (v / 100) * H;
+  return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+}).join(' ');
+const roasPath = toPath(ROAS_PTS);
+const cpaPath  = toPath(CPA_PTS);
+
+// Hero marquee: duplicate sample list to make the loop seamless
+const heroSamples = [...gallery, ...gallery];
+const heroSamplesRev = [...heroSamples].reverse();
+---
+<!doctype html>
+<html lang="en" data-theme="operator">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>forty8 — 10 ad creatives in 48 hours. Free.</title>
+  <meta name="description" content="10 ad creatives built for your DTC store. In 48 hours. Free. Senior-buyer judgment at AI-tool volume — no templating engines, no agencies, no card." />
+  <meta property="og:title" content="forty8 — 10 ad creatives in 48 hours. Free." />
+  <meta property="og:description" content="Senior-buyer judgment at AI-tool volume for DTC ecom founders. No card to start." />
+  <meta name="theme-color" content="#06080a" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+
+{/* ====================================================== NAV ======= */}
+<header id="top" class="sticky top-0 z-30 backdrop-blur border-b" style="background: var(--bg-scrim); border-color: var(--border);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 h-14 md:h-16 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="#top" class="flex items-baseline gap-px text-[19px] font-display font-semibold tracking-[-0.02em] leading-none">
+        <span style="color: var(--fg);">forty</span><span style="color: var(--accent);">8</span>
+      </a>
+      <span class="hidden md:inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+        <span class="inline-block size-1.5 rounded-full" style="background: var(--accent);"></span>
+        <span>Ad-creatives service · 48h SLA</span>
+      </span>
+    </div>
+    <div class="flex items-center gap-3 md:gap-5">
+      <a href="#claim" class="hidden sm:inline text-[13px] font-medium transition-colors" style="color: var(--fg-dim);" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--fg-dim)'">
+        How it works
+      </a>
+      <a href="#claim" class="inline-flex items-center gap-2 rounded-full font-display font-medium text-[13px] md:text-sm px-3.5 md:px-4 py-1.5 md:py-2 transition-transform active:scale-[0.98]" style="background: var(--accent); color: var(--on-accent);">
+        Get 10 creatives
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+{/* ====================================================== HERO ====== */}
+<section class="relative overflow-hidden border-b" style="border-color: var(--border);">
+  <div class="pointer-events-none absolute inset-0 opacity-[0.22]" style="background: radial-gradient(60% 50% at 18% 0%, var(--accent) 0%, transparent 60%);"></div>
+
+  <div class="relative mx-auto max-w-[1240px] px-5 md:px-8 pt-10 md:pt-16 pb-14 md:pb-24">
+    <div class="flex items-center gap-3 font-mono text-[11px] md:text-[12px] uppercase tracking-[0.14em]" style="color: var(--fg-dim);">
+      <span class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1" style="border-color: var(--border-strong); background: var(--card-elev);">
+        <span class="inline-block size-1.5 rounded-full animate-pulse" style="background: var(--positive);"></span>
+        <span>Accepting orders · 48h SLA</span>
+      </span>
+      <span class="hidden sm:inline" style="color: var(--fg-faint);">For DTC founders running $50K–$500K/mo on Meta</span>
+    </div>
+
+    <div class="mt-7 md:mt-10 grid grid-cols-12 gap-6 md:gap-10 items-start">
+      <div class="col-span-12 lg:col-span-7">
+        <h1 class="font-display font-semibold tracking-[-0.035em] leading-[0.95] text-[36px] sm:text-[56px] md:text-[80px] lg:text-[92px]" style="color: var(--fg);">
+          <span class="block">10 ad creatives,</span>
+          <span class="block">built for your store.</span>
+          <span class="block mt-1">
+            In <span style="color: var(--accent);">48 hours</span>.
+            <span class="font-light italic" style="color: var(--fg-faint);">Free.</span>
+          </span>
+        </h1>
+
+        <p class="mt-7 md:mt-9 max-w-[44ch] text-[17px] md:text-[19px] leading-[1.5] text-pretty" style="color: var(--fg-mute);">
+          Senior-buyer judgment at AI-tool volume. No templating engines. No agencies. No card to start.
+        </p>
+
+        <div class="mt-7 md:mt-10 flex flex-wrap items-center gap-4 md:gap-6">
+          <a href="#claim" class="inline-flex items-center gap-2.5 rounded-full font-display font-medium text-[15px] md:text-base px-6 py-3.5 md:py-4 transition-transform hover:-translate-y-[1px] active:translate-y-0"
+             style="background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 30px -8px var(--accent);">
+            Get my 10 creatives
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            </svg>
+          </a>
+          <div class="font-mono text-[12px] leading-snug max-w-[16rem]" style="color: var(--fg-faint);">
+            <div>Most orders ship in &lt; 24h.</div>
+            <div>Full refund if we miss 48.</div>
+          </div>
+        </div>
+
+        <div class="mt-10 md:mt-14 grid grid-cols-3 gap-3 md:gap-6 border-t pt-6 md:pt-8 max-w-[520px]" style="border-color: var(--border);">
+          <div>
+            <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg);">48h</div>
+            <div class="mt-2 font-mono text-[10.5px] uppercase tracking-[0.12em]" style="color: var(--fg-faint);">Delivery SLA</div>
+          </div>
+          <div>
+            <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg);">4:5</div>
+            <div class="mt-2 font-mono text-[10.5px] uppercase tracking-[0.12em]" style="color: var(--fg-faint);">Portrait, native to Meta</div>
+          </div>
+          <div>
+            <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg);">$0</div>
+            <div class="mt-2 font-mono text-[10.5px] uppercase tracking-[0.12em]" style="color: var(--fg-faint);">No card to start</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero marquee — 2 cols drifting opposite directions */}
+      <div class="col-span-12 lg:col-span-5">
+        <div class="relative h-[520px] md:h-[620px] overflow-hidden rounded-2xl ring-1" style="--tw-ring-color: var(--border); background: var(--card);">
+          <div class="absolute inset-0 grid grid-cols-2 gap-3 p-3">
+            <div class="marquee-col marquee-up">
+              {heroSamples.map((s) => (
+                <figure class="group relative overflow-hidden rounded-xl ring-1" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+                  <img src={`/images/gallery/${s.slug}.jpg`} alt={s.hook} loading="lazy"
+                       class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                  <div class="absolute inset-x-0 bottom-0 p-2 md:p-2.5" style="background: linear-gradient(to top, var(--scrim-strong), var(--scrim) 50%, transparent);">
+                    <span class="font-mono text-[9.5px] md:text-[10px] uppercase tracking-[0.14em]" style="color: rgba(255,255,255,0.85);">{s.vertical}</span>
+                  </div>
+                </figure>
+              ))}
+            </div>
+            <div class="marquee-col marquee-down">
+              {heroSamplesRev.map((s) => (
+                <figure class="group relative overflow-hidden rounded-xl ring-1" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+                  <img src={`/images/gallery/${s.slug}.jpg`} alt={s.hook} loading="lazy"
+                       class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                  <div class="absolute inset-x-0 bottom-0 p-2 md:p-2.5" style="background: linear-gradient(to top, var(--scrim-strong), var(--scrim) 50%, transparent);">
+                    <span class="font-mono text-[9.5px] md:text-[10px] uppercase tracking-[0.14em]" style="color: rgba(255,255,255,0.85);">{s.vertical}</span>
+                  </div>
+                </figure>
+              ))}
+            </div>
+          </div>
+          <div class="pointer-events-none absolute inset-x-0 top-0 h-16" style="background: linear-gradient(to bottom, var(--bg), transparent);"></div>
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-16" style="background: linear-gradient(to top, var(--bg), transparent);"></div>
+          <div class="pointer-events-none absolute left-3 bottom-3 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.14em] backdrop-blur-sm rounded-full px-2.5 py-1 ring-1"
+               style="color: var(--fg-mute); background: var(--scrim); --tw-ring-color: var(--border-strong);">
+            <span class="inline-block size-1.5 rounded-full" style="background: var(--accent);"></span>
+            Real outputs · last 30 days
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ============================================== PAIN (01) ============ */}
+<section class="border-b" style="border-color: var(--border); background: var(--bg);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">01</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>The math</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10 max-w-[920px]">
+        <h2 class="font-display font-semibold tracking-[-0.03em] leading-[1.02] text-[34px] sm:text-[48px] md:text-[60px]" style="color: var(--fg);">
+          Meta's rent keeps going up.
+          <span class="block" style="color: var(--fg-faint);">Your creative pipe can't keep up.</span>
+        </h2>
+
+        <div class="mt-9 md:mt-12 grid grid-cols-3 gap-2 md:gap-3">
+          {[
+            { big: '6d',    caption: 'Half-life of a winning ad in 2026 — down from 6 weeks.', red: false },
+            { big: '60/mo', caption: 'Real variations needed at $50K+/mo, post-Andromeda.',    red: false },
+            { big: '$5K',   caption: 'What an agency charges to ship 6 ads in a month.',       red: true  },
+          ].map(({ big, caption, red }) => (
+            <div class="rounded-2xl ring-1 p-5 md:p-6 relative overflow-hidden" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+              <div class="absolute -right-4 -top-4 size-20 rounded-full opacity-[0.06]" style={`background: ${red ? 'var(--negative)' : 'var(--accent)'};`}></div>
+              <div class="font-display font-semibold tracking-[-0.03em] leading-none text-[40px] sm:text-[52px] md:text-[68px]" style="color: var(--fg);">{big}</div>
+              <div class="mt-3 md:mt-4 text-[12.5px] md:text-[13.5px] leading-snug max-w-[22ch]" style="color: var(--fg-dim);">{caption}</div>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-10 md:mt-14 grid grid-cols-12 gap-6 md:gap-10">
+          <div class="col-span-12 md:col-span-7 space-y-5 text-[17px] md:text-[19px] leading-[1.55] text-pretty" style="color: var(--fg-mute);">
+            <p>Your last winner died in <span class="font-mono text-[0.92em] px-1.5 py-[1px] rounded-md ring-1" style="background: var(--card-strong); color: var(--fg); --tw-ring-color: var(--border-strong);">6 days</span>, not 6 weeks. Background swaps and headline tweaks don't count anymore — Andromeda clusters them as one ad.</p>
+            <p>The math shifted from <em class="not-italic" style="color: var(--fg);">"do I need 20 ads this month or 60?"</em> to <em class="not-italic" style="color: var(--fg);">"can I ship 50 real variations a week without burning a team or paying $5K to an agency that ships 6?"</em></p>
+          </div>
+          <aside class="col-span-12 md:col-span-5">
+            <div class="rounded-2xl border p-5 md:p-6" style="border-color: var(--border-strong); background: var(--card);">
+              <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">Source · Nest Commerce</div>
+              <blockquote class="mt-3 font-display text-[20px] md:text-[24px] leading-[1.2] tracking-[-0.015em]" style="color: var(--fg);">
+                "You can't out-target the algorithm.
+                You can <span style="color: var(--accent);">out-supply</span> it."
+              </blockquote>
+            </div>
+          </aside>
+        </div>
+
+        <div class="mt-12 md:mt-20 border-t pt-8 md:pt-12" style="border-color: var(--border);">
+          <p class="font-display font-semibold tracking-[-0.04em] leading-[0.96] text-[36px] sm:text-[64px] md:text-[100px] lg:text-[120px] break-words" style="color: var(--fg);">
+            forty<span style="color: var(--accent);">8</span><span style="color: var(--fg-faint);"> is the supply.</span>
+          </p>
+          <a href="#claim" class="mt-8 md:mt-10 inline-flex items-center gap-2 rounded-full font-display font-medium text-[14px] md:text-[15px] px-5 md:px-6 py-3 transition-transform hover:-translate-y-[1px] active:translate-y-0"
+             style="background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 24px -10px var(--accent);">
+            Claim the free 10
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ===================================== WHAT YOU GET (02) ============= */}
+<section class="border-b" style="border-color: var(--border);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">02</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>The free 10</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10">
+        <h2 class="font-display font-semibold tracking-[-0.03em] leading-[1.04] text-[32px] sm:text-[44px] md:text-[56px] max-w-[18ch]" style="color: var(--fg);">
+          What's in the 10 free creatives.
+        </h2>
+        <p class="mt-4 text-[17px] md:text-[19px] max-w-[55ch]" style="color: var(--fg-dim);">
+          Real ad creatives. Not template fills, not AI slop, not stock-photo collages.
+        </p>
+
+        <ul class="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-2 gap-px rounded-2xl overflow-hidden border" style="background: var(--card-strong); border-color: var(--border);">
+          {WHAT_YOU_GET.map((it, i) => (
+            <li class="p-6 md:p-8 flex gap-4 md:gap-5" style="background: var(--bg-elev);">
+              <span class="shrink-0 font-mono text-[11px] tracking-[0.12em] pt-1" style="color: var(--fg-faint);">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 class="font-display font-medium text-[17px] md:text-[19px] leading-snug tracking-[-0.01em]" style="color: var(--fg);">{it.title}</h3>
+                <p class="mt-2 text-[14.5px] md:text-[15px] leading-[1.55]" style="color: var(--fg-dim);">{it.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div class="mt-8 md:mt-10 inline-flex items-start gap-3 md:gap-4 rounded-2xl border px-5 md:px-6 py-4 md:py-5"
+             style="border-color: color-mix(in oklch, var(--accent) 35%, transparent); background: color-mix(in oklch, var(--accent) 7%, transparent);">
+          <span class="font-mono text-[11px] uppercase tracking-[0.14em] mt-1 shrink-0" style="color: var(--accent);">FYI</span>
+          <p class="text-[15px] md:text-base leading-snug max-w-[70ch]" style="color: var(--fg);">
+            <span class="font-semibold" style="color: var(--accent);">Free means free.</span>
+            No card. No surprise charge on day 4. No upgrade timer counting down on your dashboard.
+          </p>
+        </div>
+
+        <div class="mt-8 md:mt-10">
+          <a href="#claim" class="flex w-full justify-center sm:inline-flex sm:w-auto items-center gap-2 rounded-full font-display font-medium text-[14px] md:text-[15px] px-5 md:px-6 py-3.5 sm:py-3 transition-transform hover:-translate-y-[1px] active:translate-y-0"
+             style="background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 24px -10px var(--accent);">
+            Send me the free 10
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ===================================== WHY NOT SLOP (03) ============= */}
+<section class="border-b" style="border-color: var(--border); background: var(--bg);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">03</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>Vs. the field</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10">
+        <h2 class="font-display font-semibold tracking-[-0.03em] leading-[1.04] text-[32px] sm:text-[44px] md:text-[56px] max-w-[18ch]" style="color: var(--fg);">
+          Why this isn't another AI-creative tool.
+        </h2>
+
+        <div class="mt-7 md:mt-10 max-w-[60ch] space-y-5 text-[16.5px] md:text-[18px] leading-[1.6] text-pretty" style="color: var(--fg-mute);">
+          <p>Most $9–$300/mo AI tools generate something visible-from-orbit-fake. Real reviews of the category leader call it <em class="not-italic" style="color: var(--fg);">"templates from the 1990s"</em> and <em class="not-italic" style="color: var(--fg);">"truly bizarre and way inferior to what's available."</em> The next-tier tool (AI actors) admits it breaks on physical products.</p>
+          <p>forty8 uses AI for the heavy lifting. But every creative passes a senior Meta buyer's eye before it ships.</p>
+          <p class="text-[18px] md:text-[22px] font-display font-medium tracking-[-0.015em]" style="color: var(--fg);">
+            The difference between <span style="color: var(--fg-faint);">50 templated outputs</span> and <span style="color: var(--accent);">50 ads someone would actually run.</span>
+          </p>
+        </div>
+
+        {/* Voices band */}
+        <div class="mt-10 md:mt-14">
+          <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-4 md:mb-5" style="color: var(--fg-faint);">What operators actually say</div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+            {VOICE_QUOTES.map((v) => (
+              <figure class="rounded-2xl ring-1 p-5 md:p-6" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+                <div class="font-display text-[40px] md:text-[44px] leading-none" style="color: var(--fg-faint);">&ldquo;</div>
+                <blockquote class="-mt-3 font-display text-[16px] md:text-[18px] leading-[1.45] tracking-[-0.01em] text-pretty" style="color: var(--fg);">{v.q}</blockquote>
+                <figcaption class="mt-4 pt-3 border-t font-mono text-[10.5px] uppercase tracking-[0.14em]" style="border-color: var(--border); color: var(--fg-faint);">{v.src}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+
+        {/* 3-column compare */}
+        <div class="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          {[
+            { kind: 'bad',  label: 'AI tools', kicker: 'Template engines',   rows: COMPARE.map((r) => ({ k: r.row, v: r.ai })),     footer: 'Trial timer starts on signup' },
+            { kind: 'mid',  label: 'Agencies', kicker: 'Slow, opaque, contracted', rows: COMPARE.map((r) => ({ k: r.row, v: r.agency })), footer: 'Setup fee + 90-day contract' },
+            { kind: 'good', label: 'forty8',   kicker: 'Senior judgment, AI-tool volume', rows: COMPARE.map((r) => ({ k: r.row, v: r.forty8 })), footer: null },
+          ].map((col) => (
+            <div class={`rounded-2xl p-5 md:p-6 ring-1 ${col.kind === 'good' ? '' : col.kind === 'bad' ? '' : ''}`}
+                 style={`background: ${col.kind === 'good' ? 'var(--card-elev)' : 'var(--bg-elev)'}; --tw-ring-color: ${col.kind === 'bad' ? 'var(--negative-border)' : 'var(--border)'}; ${col.kind === 'good' ? 'box-shadow: 0 0 0 1px var(--accent), 0 30px 80px -40px var(--accent);' : ''}`}>
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style={`color: ${col.kind === 'good' ? 'var(--accent)' : col.kind === 'bad' ? 'var(--negative)' : 'var(--fg-faint)'};`}>{col.kicker}</span>
+                {col.kind === 'good' && (
+                  <span class="font-mono text-[10px] uppercase tracking-[0.14em] rounded-full px-2 py-0.5" style="color: var(--accent); border: 1px solid color-mix(in oklch, var(--accent) 45%, transparent);">Pick this</span>
+                )}
+              </div>
+              <div class="mt-2 font-display font-semibold text-[28px] md:text-[32px] tracking-[-0.02em]" style="color: var(--fg);">{col.label}</div>
+              <div class="mt-5 md:mt-6 border-t" style="border-color: var(--border);">
+                {col.rows.map((r) => (
+                  <div class="grid grid-cols-12 gap-3 py-3 border-b" style="border-color: var(--border-soft);">
+                    <div class="col-span-5 font-mono text-[10.5px] uppercase tracking-[0.12em] pt-0.5" style="color: var(--fg-faint);">{r.k}</div>
+                    <div class={`col-span-7 text-[14.5px] leading-snug ${col.kind === 'good' ? 'font-medium' : ''}`} style={`color: ${col.kind === 'good' ? 'var(--fg)' : 'var(--fg-mute)'};`}>{r.v}</div>
+                  </div>
+                ))}
+              </div>
+              {col.kind === 'good' ? (
+                <a href="#claim" class="mt-5 md:mt-6 flex w-full items-center justify-center gap-2 rounded-xl font-display font-medium text-[14.5px] md:text-[15px] py-3.5 transition-transform hover:-translate-y-[1px]"
+                   style="background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 30px -10px var(--accent);">
+                  Get my 10 creatives
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+                    <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+                  </svg>
+                </a>
+              ) : (
+                <div class="mt-5 md:mt-6 py-3.5 text-center font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">{col.footer}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ===================================== GALLERY (04) ================== */}
+<section class="border-b" style="border-color: var(--border); background: var(--bg);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">04</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>The work</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <h2 class="font-display font-semibold tracking-[-0.03em] leading-[1.04] text-[32px] sm:text-[44px] md:text-[56px] max-w-[20ch]" style="color: var(--fg);">
+              See the work.<span style="color: var(--fg-faint);"> Then judge.</span>
+            </h2>
+            <p class="mt-4 text-[16.5px] md:text-[18px] max-w-[58ch]" style="color: var(--fg-dim);">20 real creatives forty8 has shipped across DTC verticals. Tap any tile for the pain-led backstory.</p>
+          </div>
+          <div class="flex items-center gap-3 font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+            <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-sm" style="background: var(--accent);"></span><span>Verified result</span></span>
+            <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-sm ring-1" style="--tw-ring-color: var(--border-strong);"></span><span>Format intent</span></span>
+          </div>
+        </div>
+
+        <ul class="mt-10 md:mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 md:gap-3">
+          {gallery.map((tile, i) => (
+            <li>
+              <button type="button" data-tile-idx={i}
+                      class="js-gallery-open group relative block w-full aspect-[4/5] overflow-hidden rounded-xl ring-1 text-left transition-transform hover:-translate-y-[2px] focus:outline-none"
+                      style="--tw-ring-color: var(--border-strong); background: var(--bg-elev);">
+                <img src={`/images/gallery/${tile.slug}.jpg`} alt="" loading="lazy"
+                     class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                <div class="absolute inset-0" style="background: linear-gradient(to top, var(--scrim-strong), transparent 50%, var(--scrim));"></div>
+
+                {/* Badge top-left */}
+                <div class="absolute left-2 top-2 right-12 z-10">
+                  {tile.badgeKind === 'result' ? (
+                    <div class="inline-flex flex-col items-start gap-0.5 rounded-md px-2.5 py-2 max-w-full shadow-lg" style="background: var(--accent); color: var(--on-accent);">
+                      <span class="font-mono text-[9px] uppercase tracking-[0.16em] opacity-75 leading-none">Verified result</span>
+                      <span class="font-display font-semibold text-[12.5px] md:text-[13px] leading-[1.15] tracking-[-0.005em] line-clamp-2">{tile.badge}</span>
+                    </div>
+                  ) : (
+                    <div class="inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 backdrop-blur-sm ring-1" style="background: var(--scrim-strong); --tw-ring-color: var(--border-strong);">
+                      <span class="font-mono text-[10px] uppercase tracking-[0.14em] italic" style="color: rgba(231,234,239,0.8);">{tile.badge}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer chip */}
+                <div class="absolute left-2 bottom-2 right-2 z-10 flex items-center justify-between">
+                  <span class="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] rounded-full backdrop-blur-sm ring-1 px-2 py-1" style="background: var(--scrim-strong); color: rgba(231,234,239,0.9); --tw-ring-color: var(--border-strong);">
+                    Why this works
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+                      <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+                    </svg>
+                  </span>
+                  <span class="font-mono text-[9.5px] uppercase tracking-[0.14em]" style="color: rgba(231,234,239,0.55);">{String(i + 1).padStart(2, '0')}/20</span>
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <p class="mt-8 text-[13px] max-w-[60ch]" style="color: var(--fg-faint);">Brand names blurred for confidentiality. Stats are real and pulled from accounts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Gallery drawer — vanilla JS controlled */}
+<div id="gallery-backdrop" class="fixed inset-0 z-40 opacity-0 pointer-events-none transition-opacity duration-300" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);" aria-hidden="true"></div>
+<aside id="gallery-drawer"
+       class="fixed top-0 right-0 bottom-0 z-50 w-full md:max-w-[560px] border-l shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col"
+       style="background: var(--bg); border-color: var(--border-strong);"
+       role="dialog" aria-modal="true" aria-hidden="true">
+
+  <header class="shrink-0 flex items-center justify-between px-5 md:px-6 py-3.5 md:py-4 border-b" style="border-color: var(--border);">
+    <div class="flex items-center gap-3 font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+      <button id="gallery-prev" class="size-7 rounded-full ring-1 grid place-items-center transition-colors" style="--tw-ring-color: var(--border-strong);" aria-label="Previous">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M6.5 1L2 5l4.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" /></svg>
+      </button>
+      <span><span id="gallery-idx">00</span> / 20</span>
+      <button id="gallery-next" class="size-7 rounded-full ring-1 grid place-items-center transition-colors" style="--tw-ring-color: var(--border-strong);" aria-label="Next">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 1L8 5l-4.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" /></svg>
+      </button>
+    </div>
+    <button id="gallery-close" class="size-8 rounded-full ring-1 grid place-items-center transition-colors" style="--tw-ring-color: var(--border-strong);" aria-label="Close">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="square" /></svg>
+    </button>
+  </header>
+
+  <div class="flex-1 overflow-y-auto">
+    <div class="relative aspect-[4/5] overflow-hidden" style="background: var(--bg-elev);">
+      <img id="gallery-img-blur" src="" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover scale-110 blur-2xl opacity-40" />
+      <img id="gallery-img" src="" alt="" class="relative h-full w-full object-contain" />
+      <div class="absolute inset-x-0 bottom-0 p-4 md:p-5" style="background: linear-gradient(to top, var(--scrim-strong), transparent);">
+        <div id="gallery-badge"></div>
+      </div>
+    </div>
+    <div class="px-5 md:px-6 py-6 md:py-7">
+      <div class="flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+        <span id="gallery-vertical"></span><span aria-hidden="true">·</span><span id="gallery-format"></span>
+      </div>
+      <h3 id="gallery-hook" class="mt-3 font-display font-semibold tracking-[-0.02em] leading-[1.1] text-[22px] md:text-[28px]" style="color: var(--fg);"></h3>
+
+      <dl class="mt-6 space-y-5 md:space-y-6">
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-3">
+            <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">01</div>
+            <div class="mt-1 font-mono text-[11px] uppercase tracking-[0.12em]" style="color: var(--fg-dim);">The pain</div>
+          </div>
+          <p id="gallery-pain" class="col-span-9 text-[14.5px] md:text-[15px] leading-[1.55] text-pretty" style="color: var(--fg-mute);"></p>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-3">
+            <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">02</div>
+            <div class="mt-1 font-mono text-[11px] uppercase tracking-[0.12em]" style="color: var(--fg-dim);">What we did</div>
+          </div>
+          <p id="gallery-move" class="col-span-9 text-[14.5px] md:text-[15px] leading-[1.55] text-pretty" style="color: var(--fg-mute);"></p>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-3">
+            <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">03</div>
+            <div class="mt-1 font-mono text-[11px] uppercase tracking-[0.12em]" style="color: var(--fg-dim);">Why it converts</div>
+          </div>
+          <p id="gallery-convert" class="col-span-9 text-[14.5px] md:text-[15px] leading-[1.55] text-pretty" style="color: var(--fg-mute);"></p>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-3">
+            <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">04</div>
+            <div class="mt-1 font-mono text-[11px] uppercase tracking-[0.12em]" style="color: var(--fg-dim);">Built for</div>
+          </div>
+          <p id="gallery-builtfor" class="col-span-9 text-[12.5px] md:text-[13.5px] uppercase tracking-[0.06em] font-mono leading-[1.55] text-pretty" style="color: var(--fg-mute);"></p>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <footer class="shrink-0 border-t p-4 md:p-5" style="border-color: var(--border);">
+    <a href="#claim" id="gallery-cta-close"
+       class="flex w-full items-center justify-center gap-2 rounded-xl font-display font-medium text-[14.5px] md:text-[15px] py-3.5 transition-transform hover:-translate-y-[1px]"
+       style="background: var(--accent); color: var(--on-accent); box-shadow: 0 10px 30px -12px var(--accent);">
+      Get 10 like this in 48h
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+        <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+      </svg>
+    </a>
+  </footer>
+</aside>
+
+{/* ===================================== FOUNDER (05) ================== */}
+<section class="border-b" style="border-color: var(--border);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">05</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>Who built it</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10">
+        <h2 class="font-display font-semibold tracking-[-0.03em] leading-[1.02] text-[34px] sm:text-[48px] md:text-[60px] max-w-[18ch]" style="color: var(--fg);">
+          Built by operators,
+          <span class="block" style="color: var(--fg-faint);">not an agency.</span>
+        </h2>
+
+        <div class="mt-8 md:mt-12 grid grid-cols-3 gap-2.5 md:gap-4">
+          {[
+            { n: '$100M+', l: 'Meta + TikTok ad spend, last 2 years' },
+            { n: '100s',   l: 'Creatives launched per week' },
+            { n: '2 yrs',  l: 'Buying for DTC + social casino' },
+          ].map(({ n, l }) => (
+            <div class="rounded-2xl ring-1 p-4 md:p-6 relative overflow-hidden" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+              <div class="absolute -right-3 -top-3 size-16 rounded-full opacity-[0.08]" style="background: var(--accent);"></div>
+              <div class="font-display font-semibold tracking-[-0.025em] leading-none text-[26px] sm:text-[34px] md:text-[44px]" style="color: var(--accent);">{n}</div>
+              <div class="mt-2 md:mt-3 text-[11.5px] md:text-[13px] leading-snug" style="color: var(--fg-dim);">{l}</div>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-10 md:mt-14 space-y-8 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-12">
+          <div class="lg:col-span-7 space-y-5 md:space-y-6 text-[16.5px] md:text-[18px] leading-[1.6] text-pretty" style="color: var(--fg-mute);">
+            <p>We're a small team of operators. The numbers above are work we did with our own hands — not aspirational, not influenced, not "at an agency that." Real buying, on real Meta and TikTok accounts, for DTC ecom and social casino brands.</p>
+            <p>The pipeline forty8 runs on is the same one we use on the brands we own and the brands we buy for. Senior judgment isn't outsourced — it's the operational constraint.</p>
+            <p>What you get when you sign up for forty8 is the same work we'd run on our own accounts. Not a watered-down version. Not a junior-on-the-bench tier.</p>
+          </div>
+
+          {/* DashboardMock */}
+          <div class="lg:col-span-5">
+            <div class="rounded-2xl ring-1 overflow-hidden" style="background: var(--bg-elev); --tw-ring-color: var(--border-strong);">
+              <div class="flex items-center justify-between px-4 py-3 border-b font-mono text-[10.5px] uppercase tracking-[0.14em]" style="border-color: var(--border); color: var(--fg-faint);">
+                <div class="flex items-center gap-2">
+                  <span class="size-2 rounded-full" style="background: var(--border-strong);"></span>
+                  <span>Aggregate · Meta + TikTok · 24 mo</span>
+                </div>
+                <span>Anonymized</span>
+              </div>
+              <div class="p-5 md:p-6 space-y-5">
+                <div class="rounded-xl ring-1 p-4" style="background: var(--card); --tw-ring-color: var(--border);">
+                  <div class="font-mono text-[10px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">Total ad spend managed</div>
+                  <div class="mt-1 flex items-baseline gap-3">
+                    <span class="font-display font-semibold text-[28px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg);">$100.8M</span>
+                    <span class="font-mono text-[11px]" style="color: var(--positive);">+$4.2M MTD</span>
+                  </div>
+
+                  {/* SparkChart inline */}
+                  <div class="mt-3 rounded-xl ring-1 p-4 overflow-hidden" style="background: var(--card); --tw-ring-color: var(--border);">
+                    <div class="flex items-center justify-between font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+                      <span>CPA ↓ / ROAS ↑ — 12 weeks</span>
+                      <span>Creative cadence: 10/wk</span>
+                    </div>
+                    <svg viewBox={`0 0 ${W} ${H}`} class="mt-3 w-full h-[90px]" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="gAcc" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.4" />
+                          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d={`${roasPath} L${W},${H} L0,${H} Z`} fill="url(#gAcc)" />
+                      <path d={roasPath} stroke="var(--accent)" stroke-width="1.6" fill="none" />
+                      <path d={cpaPath}  stroke="rgba(231,234,239,0.35)" stroke-width="1.4" stroke-dasharray="3 3" fill="none" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="rounded-xl ring-1 p-4" style="background: var(--card); --tw-ring-color: var(--border);">
+                  <div class="font-mono text-[10px] uppercase tracking-[0.14em] mb-3" style="color: var(--fg-faint);">Contributing accounts</div>
+                  <ul class="space-y-2">
+                    {DASHBOARD_ROWS.map((r) => (
+                      <li class="grid grid-cols-12 items-center gap-2 font-mono text-[11.5px]">
+                        <span class="col-span-6 truncate uppercase tracking-[0.08em]" style="color: var(--fg-mute);">{r.tag}</span>
+                        <span class="col-span-4 text-right" style="color: var(--fg);">{r.spend}</span>
+                        <span class="col-span-2 text-right" style="color: var(--fg-dim);">{r.roas}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="text-[12px] italic leading-snug" style="color: var(--fg-faint);">Brand names removed for confidentiality. Aggregate totals preserved.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-10 md:mt-14 pt-8 md:pt-10 border-t" style="border-color: var(--border);">
+          <a href="#claim" class="flex w-full justify-center sm:inline-flex sm:w-auto items-center gap-2 rounded-full font-display font-medium text-[14px] md:text-[15px] px-5 md:px-6 py-3.5 sm:py-3 transition-transform hover:-translate-y-[1px] active:translate-y-0"
+             style="background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 24px -10px var(--accent);">
+            Put me on the queue
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ============================================ FAQ (06) =============== */}
+<section class="border-b" style="border-color: var(--border);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">06</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>The honest part</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10">
+        <h2 class="font-display font-semibold tracking-[-0.03em] leading-[1.04] text-[32px] sm:text-[44px] md:text-[56px] max-w-[22ch]" style="color: var(--fg);">
+          Honest answers to the questions you should be asking.
+        </h2>
+
+        <div class="mt-10 md:mt-14 border-t" style="border-color: var(--border);">
+          {FAQS.map((f, i) => (
+            <details class="group border-b" style="border-color: var(--border);">
+              <summary class="cursor-pointer list-none w-full text-left py-5 md:py-6 flex items-start gap-5 md:gap-6">
+                <span class="font-mono text-[11px] tracking-[0.12em] pt-1.5 w-8 shrink-0" style="color: var(--fg-faint);">{String(i + 1).padStart(2, '0')}</span>
+                <span class="flex-1 font-display font-medium text-[18px] md:text-[22px] tracking-[-0.015em] transition-colors" style="color: var(--fg);">{f.q}</span>
+                <span class="shrink-0 mt-1 size-7 rounded-full ring-1 flex items-center justify-center transition-transform group-open:rotate-45" style="--tw-ring-color: var(--border-strong);">
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+                    <path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" />
+                  </svg>
+                </span>
+              </summary>
+              <div class="pb-6 md:pb-8 pl-0 sm:pl-[3.5rem] md:pl-[3.7rem] pr-2 sm:pr-12 text-[15.5px] md:text-[16.5px] leading-[1.6] max-w-[70ch]" style="color: var(--fg-dim);">
+                {f.a}
+              </div>
+            </details>
+          ))}
+        </div>
+
+        <div class="mt-10 md:mt-14">
+          <a href="#claim" class="flex w-full justify-center sm:inline-flex sm:w-auto items-center gap-2 rounded-full font-display font-medium text-[14px] md:text-[15px] px-5 md:px-6 py-3.5 sm:py-3 transition-transform hover:-translate-y-[1px] active:translate-y-0"
+             style="background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 24px -10px var(--accent);">
+            Ready — send the 10
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ====================================== FINAL CTA / FORM (07) ======== */}
+<section class="border-b scroll-mt-16" style="border-color: var(--border); background: var(--bg);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 section-py">
+    <div class="grid grid-cols-12 gap-6 md:gap-10">
+      <div class="col-span-12 md:col-span-2">
+        <div class="flex md:block items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          <span style="color: var(--fg-dim);">07</span>
+          <span class="hidden md:block h-px w-10 mt-3 mb-3" style="background: var(--border-strong);"></span>
+          <span>Claim</span>
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-10">
+        <div class="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-14">
+          <div class="lg:col-span-5">
+            <h2 class="font-display font-semibold tracking-[-0.035em] leading-[1.0] text-[40px] sm:text-[56px] md:text-[68px]" style="color: var(--fg);">
+              Get your 10 ad creatives.
+              <span class="block" style="color: var(--accent);">Free. In 48 hours.</span>
+            </h2>
+            <p class="mt-5 text-[16.5px] md:text-[18px] max-w-[40ch]" style="color: var(--fg-dim);">No card. No spam. No upgrade timer. Just 10 real creatives in your inbox.</p>
+
+            <ul class="mt-8 space-y-2.5 text-[14px] md:text-[14.5px]" style="color: var(--fg-mute);">
+              {['Delivered in 48 hours. Often under 24.', 'Refund-backed if we miss.', 'Built by a senior Meta buyer, not a templating engine.'].map((c) => (
+                <li class="flex items-start gap-2.5">
+                  <span class="mt-[5px] inline-block size-1.5 rounded-full" style="background: var(--accent);"></span>
+                  <span>{c}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* EmailPreview (Gmail mockup — stays light-themed in all directions) */}
+            <div class="mt-8 md:mt-10 rounded-xl overflow-hidden shadow-[0_18px_50px_-20px_rgba(0,0,0,0.45)] border" style="background:#fff; border-color:#e8eaed; color:#202124;">
+              <div class="flex items-center gap-1.5 px-3 py-2 border-b" style="background:#f6f8fc; border-color:#e8eaed;">
+                <span class="size-2 rounded-full" style="background:#ea4335;"></span>
+                <span class="size-2 rounded-full" style="background:#fbbc04;"></span>
+                <span class="size-2 rounded-full" style="background:#34a853;"></span>
+                <span class="ml-2 text-[11px]" style="color:#5f6368;">Inbox — Gmail</span>
+              </div>
+              <div class="p-4 md:p-5">
+                <div class="flex items-start gap-3">
+                  <div class="flex-1 min-w-0">
+                    <h4 class="text-[16px] md:text-[17px] font-medium leading-snug" style="color:#202124;">Your 10 forty8 creatives are ready ↓</h4>
+                    <div class="mt-1 flex items-center gap-2 text-[12px]" style="color:#5f6368;">
+                      <span class="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style="background:#e8f0fe; color:#1a73e8;">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                          <path d="M1.5 2.5h7v5h-7zM1.5 2.5L5 5.5l3.5-3" stroke="currentColor" stroke-width="1" />
+                        </svg>
+                        Inbox
+                      </span>
+                      <span>·</span>
+                      <span>delivered in 23h 42m</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t flex items-center gap-3" style="border-color:#f1f3f4;">
+                  <div class="shrink-0 size-9 rounded-full grid place-items-center text-white font-medium text-[14px]" style="background:#1a73e8;">S</div>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-baseline gap-1.5">
+                      <span class="text-[14px] font-medium" style="color:#202124;">Shuki</span>
+                      <span class="text-[12px]" style="color:#5f6368;">&lt;shuki@forty8.co&gt;</span>
+                    </div>
+                    <div class="text-[12px]" style="color:#5f6368;">to me</div>
+                  </div>
+                  <div class="shrink-0 text-[11px]" style="color:#5f6368;">Mon 9:14 AM</div>
+                </div>
+
+                <p class="mt-4 text-[13.5px] leading-[1.55]" style="color:#3c4043;">Hey — your 10 creatives are attached. Hooks I leaned into, why this set, what to launch first. One-click upload to Ads Manager. Reply with what hits and I'll iterate.</p>
+                <p class="mt-2 text-[13.5px]" style="color:#3c4043;">— Shuki</p>
+
+                <div class="mt-5 flex items-center gap-2 text-[12px]" style="color:#5f6368;">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M9.5 4l-4.4 4.4a1.6 1.6 0 002.3 2.3l5-5a3 3 0 10-4.2-4.2l-5.4 5.4a4.4 4.4 0 106.2 6.2l4.6-4.6" stroke="#5f6368" stroke-width="1.1" fill="none" stroke-linecap="round" />
+                  </svg>
+                  <span>10 attachments · 4:5 PNG</span>
+                  <span class="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 cursor-pointer" style="color:#1a73e8;">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M6 1v8M2.5 6.5L6 10l3.5-3.5M1 11h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                    <span class="font-medium">Download all</span>
+                  </span>
+                </div>
+
+                <div class="mt-2.5 grid grid-cols-5 gap-1.5">
+                  {EMAIL_THUMBS.map((slug, i) => (
+                    <div class="relative aspect-[4/5] rounded-md overflow-hidden border" style="border-color:#e8eaed;">
+                      <img src={`/images/gallery/${slug}.jpg`} alt="" class="h-full w-full object-cover" loading="lazy" />
+                      <div class="absolute inset-x-0 bottom-0 px-1.5 py-1 text-[9.5px] leading-none truncate" style="background:rgba(255,255,255,0.92); color:#3c4043;">
+                        ad_{String(i + 1).padStart(2, '0')}.png
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <span id="claim" class="block scroll-mt-6 sm:scroll-mt-10" aria-hidden="true"></span>
+
+            <form id="claimForm" class="lp-claim-form rounded-2xl ring-1 p-5 md:p-7 space-y-4 md:space-y-5 relative" style="background: var(--bg-elev); --tw-ring-color: var(--border);" action="#" method="post" novalidate>
+              <div class="lp-form-ribbon flex items-center justify-between -mt-1 mb-2 pb-3 border-b font-mono text-[10.5px] uppercase tracking-[0.14em]" style="border-color: var(--border); color: var(--fg-faint);">
+                <span class="inline-flex items-center gap-2">
+                  <span class="inline-block size-1.5 rounded-full animate-pulse" style="background: var(--positive);"></span>
+                  <span>INTAKE_FORM · READY</span>
+                </span>
+                <span>est. 48h</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label class="block">
+                  <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">First name</span>
+                  <input type="text" name="firstName" required autocomplete="given-name"
+                         class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                         style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+                </label>
+                <label class="block">
+                  <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">Email</span>
+                  <input type="email" name="email" required autocomplete="email"
+                         class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                         style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+                </label>
+              </div>
+
+              <label class="block">
+                <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">Store URL</span>
+                <input type="url" name="storeUrl" required placeholder="https://"
+                       class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                       style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+                <span class="mt-1.5 block text-[12px]" style="color: var(--fg-faint);">We pull product images, hero copy, and reviews from here.</span>
+              </label>
+
+              <label class="block">
+                <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">What's your hero product?</span>
+                <input type="text" name="heroProduct" required placeholder="e.g. premium dog supplements"
+                       class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                       style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+              </label>
+
+              <label class="block">
+                <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">Your top competitor's URL</span>
+                <input type="url" name="competitor1" required placeholder="https://"
+                       class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                       style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+              </label>
+
+              <label class="block">
+                <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">A second competitor's URL</span>
+                <input type="url" name="competitor2" required placeholder="https://"
+                       class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                       style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+                <span class="mt-1.5 block text-[12px]" style="color: var(--fg-faint);">We research both — to avoid their angles and find a hook none of you are using yet.</span>
+              </label>
+
+              <label class="block">
+                <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">Current monthly Meta spend</span>
+                <select name="monthlySpend" required
+                        class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                        style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);">
+                  <option value="">Select…</option>
+                  <option value="<5k">Under $5K</option>
+                  <option value="5k-50k">$5K–$50K</option>
+                  <option value="50k-500k">$50K–$500K</option>
+                  <option value="500k+">$500K+</option>
+                </select>
+              </label>
+
+              <label class="block">
+                <span class="block text-[12.5px] font-mono uppercase tracking-[0.12em] mb-2" style="color: var(--fg-dim);">
+                  One angle you've tried that didn't work <span class="font-normal" style="color: var(--fg-faint);">(optional)</span>
+                </span>
+                <input type="text" name="failedAngle" placeholder="Helps us avoid repeating it"
+                       class="w-full rounded-lg border px-4 py-3 text-[15px] focus:outline-none transition"
+                       style="background: var(--bg); border-color: var(--border-strong); color: var(--fg);" />
+              </label>
+
+              <button type="submit"
+                      class="flex w-full items-center justify-center gap-2.5 rounded-xl font-display font-medium text-[15px] md:text-base py-4 transition-transform hover:-translate-y-[1px] active:translate-y-0"
+                      style="background: var(--accent); color: var(--on-accent); box-shadow: 0 10px 30px -12px var(--accent);">
+                Send me my 10 creatives
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+                  <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+                </svg>
+              </button>
+              <p class="text-center text-[12.5px] leading-snug" style="color: var(--fg-faint);">
+                Delivered in 48 hours. Often under 24. Refund-backed if we miss.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* ====================================================== FOOTER ====== */}
+<footer style="background: var(--bg);">
+  <div class="mx-auto max-w-[1240px] px-5 md:px-8 py-10 md:py-14">
+    <div class="grid grid-cols-12 gap-6 md:gap-10 items-end">
+      <div class="col-span-12 md:col-span-6">
+        <div class="font-display font-semibold tracking-[-0.04em] leading-[0.9] text-[52px] sm:text-[72px] md:text-[110px] break-words" style="color: var(--fg);">
+          forty<span style="color: var(--accent);">8</span>.
+        </div>
+        <p class="mt-4 text-[13px] max-w-[55ch]" style="color: var(--fg-faint);">
+          Independently operated. Not affiliated with Meta. No relationship to any agency or AI-tool brand mentioned on this page.
+        </p>
+      </div>
+      <div class="col-span-12 md:col-span-6 grid grid-cols-2 md:grid-cols-3 gap-6 text-[13px]">
+        <div>
+          <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-3" style="color: var(--fg-faint);">Service</div>
+          <div class="flex flex-col gap-2">
+            <a href="#claim" class="footer-link">Claim 10 free</a>
+            <a href="/oto1" class="footer-link">OTO funnel</a>
+            <a href="#" class="footer-link">Retainer</a>
+          </div>
+        </div>
+        <div>
+          <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-3" style="color: var(--fg-faint);">Legal</div>
+          <div class="flex flex-col gap-2">
+            <a href="/terms"   class="footer-link">Terms</a>
+            <a href="/privacy" class="footer-link">Privacy</a>
+            <a href="/refund"  class="footer-link">Refund policy</a>
+          </div>
+        </div>
+        <div>
+          <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-3" style="color: var(--fg-faint);">Contact</div>
+          <div class="flex flex-col gap-2">
+            <a href="mailto:shuki@lixfix.com" class="footer-link">shuki@lixfix.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{/* ============================================ INLINE SCRIPTS ======== */}
+<script is:inline define:vars={{ galleryData: gallery }}>
+  // ---- Form submit: redirect to OTO funnel, no inline confirmation ----
+  document.getElementById('claimForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    // TODO: POST form data to backend BEFORE redirecting.
+    window.location.href = '/oto1';
+  });
+
+  // ---- Gallery drawer ----
+  const tiles    = document.querySelectorAll('.js-gallery-open');
+  const backdrop = document.getElementById('gallery-backdrop');
+  const drawer   = document.getElementById('gallery-drawer');
+  const img      = document.getElementById('gallery-img');
+  const imgBlur  = document.getElementById('gallery-img-blur');
+  const idxEl    = document.getElementById('gallery-idx');
+  const verticalEl = document.getElementById('gallery-vertical');
+  const formatEl   = document.getElementById('gallery-format');
+  const hookEl     = document.getElementById('gallery-hook');
+  const painEl     = document.getElementById('gallery-pain');
+  const moveEl     = document.getElementById('gallery-move');
+  const convertEl  = document.getElementById('gallery-convert');
+  const builtForEl = document.getElementById('gallery-builtfor');
+  const badgeEl    = document.getElementById('gallery-badge');
+
+  let cur = -1;
+
+  function renderBadge(t) {
+    if (t.badgeKind === 'result') {
+      badgeEl.innerHTML = `
+        <div class="inline-flex flex-col items-start gap-0.5 rounded-md px-2.5 py-2 max-w-full shadow-lg" style="background: var(--accent); color: var(--on-accent);">
+          <span class="font-mono text-[9px] uppercase tracking-[0.16em] opacity-75 leading-none">Verified result</span>
+          <span class="font-display font-semibold text-[12.5px] md:text-[13px] leading-[1.15] tracking-[-0.005em]">${t.badge}</span>
+        </div>`;
+    } else {
+      badgeEl.innerHTML = `
+        <div class="inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 backdrop-blur-sm ring-1" style="background: var(--scrim-strong); --tw-ring-color: var(--border-strong);">
+          <span class="font-mono text-[10px] uppercase tracking-[0.14em] italic" style="color: rgba(231,234,239,0.8);">${t.badge}</span>
+        </div>`;
+    }
+  }
+
+  function open(i) {
+    cur = ((i % galleryData.length) + galleryData.length) % galleryData.length;
+    const t = galleryData[cur];
+    img.src = `/images/gallery/${t.slug}.jpg`;
+    imgBlur.src = img.src;
+    idxEl.textContent = String(cur + 1).padStart(2, '0');
+    verticalEl.textContent = t.vertical;
+    formatEl.textContent = t.format;
+    hookEl.textContent = `“${t.hook}”`;
+    painEl.textContent = t.pain;
+    moveEl.textContent = t.whatWeDid;
+    convertEl.textContent = t.whyItConverts;
+    builtForEl.textContent = t.builtFor;
+    renderBadge(t);
+    backdrop.style.opacity = '1';
+    backdrop.style.pointerEvents = 'auto';
+    drawer.style.transform = 'translateX(0)';
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    backdrop.style.opacity = '0';
+    backdrop.style.pointerEvents = 'none';
+    drawer.style.transform = '';
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    cur = -1;
+  }
+
+  tiles.forEach((b, i) => b.addEventListener('click', () => open(i)));
+  backdrop.addEventListener('click', close);
+  document.getElementById('gallery-close').addEventListener('click', close);
+  document.getElementById('gallery-prev').addEventListener('click', () => open(cur - 1));
+  document.getElementById('gallery-next').addEventListener('click', () => open(cur + 1));
+  document.getElementById('gallery-cta-close').addEventListener('click', close);
+  window.addEventListener('keydown', (e) => {
+    if (cur < 0) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowRight') open(cur + 1);
+    if (e.key === 'ArrowLeft')  open(cur - 1);
+  });
+</script>
+
+</body>
+</html>

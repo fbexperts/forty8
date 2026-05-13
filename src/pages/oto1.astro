@@ -1,0 +1,235 @@
+---
+import OtoLayout from '../layouts/OtoLayout.astro';
+import Comparison from '../components/Comparison.astro';
+import { gallery } from '../data/gallery';
+
+// 10 unique thumbnails (left card); 50 cycled with a stride-7 shuffle (right card)
+const ALL_SLUGS = gallery.map((g) => g.slug);
+const tenThumbs   = ALL_SLUGS.slice(0, 10);
+const fiftyThumbs = Array.from({ length: 50 }, (_, i) => ALL_SLUGS[(i * 7) % ALL_SLUGS.length]);
+---
+<OtoLayout
+  title="forty8 — upgrade to 50 creatives ($9.99)"
+  description="One-time upgrade. 50 creatives instead of 10. Same 48 hours."
+  step={2}
+  skipHref="/oto2"
+>
+
+  <div class="space-y-10 md:space-y-12">
+
+    {/* HERO */}
+    <section>
+      <div class="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+        <span class="rounded-full px-2 py-1 ring-1" style="background: var(--card); --tw-ring-color: var(--border-strong);">OTO 1 / 3</span>
+        <span>Before we build your 10 — one offer</span>
+      </div>
+
+      <h1
+        class="mt-5 font-display font-semibold tracking-[-0.035em] leading-[0.96] text-balance text-[34px] sm:text-[44px] md:text-[56px]"
+        style="color: var(--fg);"
+      >
+        Want <span style="color: var(--accent);">50 creatives</span> instead of 10?
+      </h1>
+
+      <p
+        class="mt-4 md:mt-5 text-[16.5px] md:text-[18px] max-w-[55ch] text-pretty"
+        style="color: var(--fg-mute);"
+      >
+        One-time
+        <span class="font-mono text-[0.92em] px-1.5 py-[1px] rounded-md ring-1" style="background: var(--card-strong); color: var(--fg); --tw-ring-color: var(--border-strong);">$9.99</span>.
+        Same 48 hours. Same senior-buyer review on every asset. Charged once. No subscription.
+        No card on file after.
+      </p>
+    </section>
+
+    {/* 10 vs 50 — the page's load-bearing persuasion element */}
+    <section>
+      <h2 class="font-display font-semibold text-[22px] md:text-[26px] tracking-[-0.015em] mb-4 md:mb-5" style="color: var(--fg);">
+        See the difference.
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 items-start">
+
+        {/* "Just the 10" — muted baseline */}
+        <div class="rounded-2xl ring-1 p-3 md:p-4" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+          <div class="flex items-baseline justify-between mb-3">
+            <span class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">Just the 10</span>
+            <span class="font-mono text-[11px]" style="color: var(--fg-faint);">$0</span>
+          </div>
+          <div class="grid grid-cols-5 gap-1 md:gap-1.5">
+            {tenThumbs.map((slug) => (
+              <figure class="aspect-[4/5] overflow-hidden rounded-sm" style="background: var(--bg);">
+                <img
+                  src={`/images/gallery/${slug}.jpg`}
+                  alt=""
+                  loading="lazy"
+                  class="h-full w-full object-cover opacity-90"
+                />
+              </figure>
+            ))}
+          </div>
+          <p class="mt-3 text-[11.5px] md:text-[12.5px] leading-snug" style="color: var(--fg-faint);">
+            1 angle tested · fatigue in ~3 days · maybe a winner
+          </p>
+        </div>
+
+        {/* "Upgrade to 50" — accent-tinted, dense, ribbon */}
+        <div
+          class="rounded-2xl p-3 md:p-4 relative ring-1"
+          style="background: color-mix(in oklch, var(--accent) 6%, var(--bg-elev)); box-shadow: 0 0 0 2px color-mix(in oklch, var(--accent) 40%, transparent), 0 30px 80px -40px var(--accent);"
+        >
+          <span
+            class="absolute -top-2.5 right-3 inline-block rounded-full font-mono text-[10px] font-extrabold uppercase tracking-[0.14em] px-2 py-0.5 shadow-md"
+            style="background: var(--accent); color: var(--on-accent);"
+          >
+            +$9.99
+          </span>
+          <div class="flex items-baseline justify-between mb-3">
+            <span class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--accent);">Upgrade to 50</span>
+            <span class="font-mono text-[11px]" style="color: var(--accent);">$9.99</span>
+          </div>
+          <div class="grid grid-cols-10 gap-0.5 md:gap-1">
+            {fiftyThumbs.map((slug) => (
+              <figure class="aspect-[4/5] overflow-hidden rounded-[2px]" style="background: var(--bg);">
+                <img
+                  src={`/images/gallery/${slug}.jpg`}
+                  alt=""
+                  loading="lazy"
+                  class="h-full w-full object-cover"
+                />
+              </figure>
+            ))}
+          </div>
+          <p class="mt-3 text-[11.5px] md:text-[12.5px] leading-snug font-medium" style="color: var(--fg);">
+            5 angles tested · ~2 weeks of testing fuel · winner discovery jumps
+          </p>
+        </div>
+
+      </div>
+
+      <p class="mt-4 md:mt-5 text-center text-[12px]" style="color: var(--fg-faint);">
+        Real forty8 outputs · same 48-hour delivery · senior-buyer reviewed
+      </p>
+    </section>
+
+    {/* Comparison cards */}
+    <section>
+      <h2 class="font-display font-semibold text-[22px] md:text-[26px] tracking-[-0.015em] mb-4 md:mb-5" style="color: var(--fg);">
+        Just the 10 vs the 50 upgrade.
+      </h2>
+      <Comparison
+        skip={{
+          kicker: 'Just the 10',
+          title: 'What you came for.',
+          price: 'Free · already in your queue',
+          bullets: [
+            '10 fully-rendered 4:5 PNGs in 48 hours',
+            'Enough to test a hook angle, not a strategy',
+            'A new test cycle every time you want a refresh',
+          ],
+        }}
+        recommended={{
+          kicker: 'Upgrade to 50',
+          title: 'What the math actually requires.',
+          price: '$9.99 once · same 48-hour SLA',
+          bullets: [
+            '5× the volume — real angle diversity, not cosmetic variation',
+            'Andromeda treats them as distinct creatives, not one cluster',
+            'Enough to run a real test matrix (4–5 hooks × multiple formats)',
+            'Most buyers run forty8 in parallel with their agency — this batch is that',
+          ],
+        }}
+      />
+    </section>
+
+    {/* Math anchor */}
+    <section class="rounded-2xl ring-1 p-5 md:p-7" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+      <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-3" style="color: var(--fg-faint);">
+        The math, anchored
+      </div>
+      <div class="grid grid-cols-3 gap-3 md:gap-5">
+        <div>
+          <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg-dim);">$59</div>
+          <div class="mt-2 text-[12px] leading-snug" style="color: var(--fg-dim);">ONE Billo UGC video</div>
+        </div>
+        <div>
+          <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--fg-dim);">$7</div>
+          <div class="mt-2 text-[12px] leading-snug" style="color: var(--fg-dim);">ONE month of AdCreative.ai</div>
+        </div>
+        <div>
+          <div class="font-display font-semibold text-[26px] md:text-[34px] tracking-[-0.02em] leading-none" style="color: var(--accent);">$0.20</div>
+          <div class="mt-2 text-[12px] leading-snug" style="color: var(--fg-dim);">per forty8 creative (50 for $9.99)</div>
+        </div>
+      </div>
+    </section>
+
+    {/* CHECKOUT — Lemon Squeezy overlay
+         Click "Pay $9.99" → LS overlay opens on top of this page with the real
+         card form / Apple Pay / Google Pay. On success LS redirects to /oto2
+         (configured in LS product dashboard, NOT in this code). */}
+    <section>
+      <div id="checkout" class="rounded-2xl ring-1 p-5 md:p-7" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+
+        <div class="flex items-center justify-between mb-5">
+          <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">Secure checkout</div>
+          <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] inline-flex items-center gap-1.5" style="color: var(--fg-faint);">
+            <svg width="10" height="11" viewBox="0 0 10 11" fill="none" aria-hidden="true">
+              <rect x="1.5" y="4.5" width="7" height="5.5" rx="1" stroke="currentColor" stroke-width="1" />
+              <path d="M3 4.5V3a2 2 0 014 0v1.5" stroke="currentColor" stroke-width="1" />
+            </svg>
+            Lemon Squeezy
+          </div>
+        </div>
+
+        <p class="text-[14px] md:text-[15px] leading-snug mb-5" style="color: var(--fg-dim);">
+          A secure card form opens here in one click — Apple Pay, Google Pay, or any card.
+          One charge of <span class="font-mono" style="color: var(--fg);">$9.99</span>. No subscription, no auto-renewal.
+        </p>
+
+        <a
+          href="https://forty8.co/checkout/buy/9cff0d84-ea6a-4684-9373-826adef2396a"
+          class="lemonsqueezy-button flex w-full items-center justify-center gap-2.5 rounded-2xl font-display font-medium text-[16px] md:text-[17px] py-4 md:py-[18px] transition-transform hover:-translate-y-[1px] active:translate-y-0"
+          style="background: var(--accent); color: var(--on-accent); box-shadow: 0 14px 40px -14px var(--accent);"
+        >
+          Pay $9.99 — make it 50
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+            <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+          </svg>
+        </a>
+
+        <div class="mt-3 text-center font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+          Apple Pay · Google Pay · Cards · Refund-backed
+        </div>
+
+        <a
+          href="/oto2"
+          class="block w-full text-center text-[13px] underline underline-offset-4 transition-colors mt-5"
+          style="color: var(--fg-dim);"
+          onmouseover="this.style.color='var(--fg)'"
+          onmouseout="this.style.color='var(--fg-dim)'"
+        >
+          No thanks — ship the 10 free creatives only
+        </a>
+      </div>
+    </section>
+
+  </div>
+
+  {/* Mobile-only sticky bottom bar — Pay CTA always one tap away */}
+  <div
+    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 py-3"
+    style="background: var(--bg-scrim); border-color: var(--border);"
+  >
+    <a
+      href="https://forty8.co/checkout/buy/9cff0d84-ea6a-4684-9373-826adef2396a"
+      class="lemonsqueezy-button flex w-full items-center justify-center gap-2 rounded-xl font-display font-medium text-[15px] py-3.5 transition-transform active:translate-y-[1px]"
+      style="background: var(--accent); color: var(--on-accent); box-shadow: 0 6px 24px -8px var(--accent);"
+    >
+      Pay $9.99 — make it 50
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+        <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+      </svg>
+    </a>
+  </div>
+
+</OtoLayout>

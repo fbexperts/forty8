@@ -1,0 +1,188 @@
+---
+import OtoLayout from '../layouts/OtoLayout.astro';
+import Comparison from '../components/Comparison.astro';
+import OrderStack from '../components/OrderStack.astro';
+
+const auditSteps = [
+  { label: 'I open your Ads Manager myself',          body: 'Read access only. You revoke it after the audit. No login I keep around.' },
+  { label: 'Pick the 3–5 to launch first',            body: 'Not all 50. The 50 is your bench — week one is a budget-disciplined test.' },
+  { label: 'Recommend the test structure',            body: 'CBO vs ABO, daily budgets, lookalike vs interest, mobile placement priority.' },
+  { label: 'Audit 3 things upstream that will kill them', body: 'PDP, post-click experience, pixel events. Creative converts in context, not isolation.' },
+  { label: '15-minute recorded Loom in your inbox',   body: 'You watch it once. Forward to your team. No live call, no scheduling Tetris.' },
+];
+---
+<OtoLayout
+  title="forty8 — Founder Account Audit ($97)"
+  description="A senior buyer reviews your Meta ad account. 15-min Loom delivered with your creatives."
+  step={4}
+  skipHref="/thanks"
+>
+
+  <div class="space-y-10 md:space-y-12">
+
+    <OrderStack activeId="oto3" />
+
+    {/* HERO */}
+    <section>
+      <div class="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">
+        <span class="rounded-full px-2 py-1 ring-1" style="background: var(--card); --tw-ring-color: var(--border-strong);">OTO 3 / 3</span>
+        <span>Final add</span>
+      </div>
+
+      <h1
+        class="mt-5 font-display font-semibold tracking-[-0.035em] leading-[0.96] text-balance text-[34px] sm:text-[44px] md:text-[56px]"
+        style="color: var(--fg);"
+      >
+        Don't burn your <span style="color: var(--accent);">50 creatives.</span>
+      </h1>
+    </section>
+
+    {/* Pain pull-quote — section's emotional anchor */}
+    <section class="relative">
+      <div
+        class="font-display absolute -left-1 md:-left-3 -top-3 md:-top-5 text-[80px] md:text-[120px] leading-none opacity-25 select-none"
+        style="color: var(--accent);"
+      >
+        &ldquo;
+      </div>
+      <blockquote class="relative pl-7 md:pl-10 border-l-2 py-1 md:py-2" style="border-color: var(--accent);">
+        <p
+          class="font-display font-semibold text-[24px] md:text-[34px] lg:text-[40px] leading-[1.1] tracking-[-0.02em] text-pretty"
+          style="color: var(--fg);"
+        >
+          Most founders launch all 50 creatives at once and learn nothing.
+          Or test two, declare them losers, and email us asking what went wrong.
+          <span style="color: var(--accent);"> Don't.</span>
+        </p>
+      </blockquote>
+    </section>
+
+    <section>
+      <p class="text-[16.5px] md:text-[18px] max-w-[58ch] text-pretty" style="color: var(--fg-mute);">
+        The Founder Account Audit is the 15-minute Loom version of what an agency charges
+        <span class="font-mono text-[0.92em] px-1.5 py-[1px] rounded-md ring-1" style="background: var(--card-strong); color: var(--fg); --tw-ring-color: var(--border-strong);">$5K–$7K</span>
+        setup fee for. It's the difference between launching 50 ads and launching a real test cycle.
+      </p>
+    </section>
+
+    {/* 5 numbered audit steps */}
+    <section>
+      <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-4 md:mb-5" style="color: var(--fg-faint);">
+        What's in the audit
+      </div>
+      <ol class="space-y-3 md:space-y-4">
+        {auditSteps.map((s, i) => (
+          <li class="rounded-2xl ring-1 p-5 md:p-6 flex gap-4 md:gap-5" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+            <div
+              class="shrink-0 size-10 md:size-12 rounded-xl grid place-items-center font-display font-semibold text-[18px] md:text-[20px] tracking-[-0.01em] ring-1"
+              style="background: color-mix(in oklch, var(--accent) 12%, transparent); color: var(--accent); --tw-ring-color: color-mix(in oklch, var(--accent) 40%, transparent);"
+            >
+              {String(i + 1).padStart(2, '0')}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-display font-medium text-[17px] md:text-[19px] tracking-[-0.01em] leading-snug" style="color: var(--fg);">
+                {s.label}
+              </div>
+              <p class="mt-1.5 text-[13.5px] md:text-[14.5px] leading-snug" style="color: var(--fg-dim);">
+                {s.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {/* Comparison */}
+    <section>
+      <h2 class="font-display font-semibold text-[22px] md:text-[26px] tracking-[-0.015em] mb-4 md:mb-5" style="color: var(--fg);">
+        Launch alone · vs · launch with the audit.
+      </h2>
+      <Comparison
+        skip={{
+          kicker: 'Launch alone',
+          title: '50 creatives, no flight plan.',
+          price: 'Already in your order',
+          bullets: [
+            'You guess which 3–5 to launch first',
+            'No second opinion on budget/test structure',
+            "If they don't convert, you don't know if creative was the problem or the funnel",
+          ],
+        }}
+        recommended={{
+          kicker: '+ Founder Account Audit',
+          title: "A senior buyer's eyes on YOUR account.",
+          price: '+$97 one-time · charged to card on file',
+          bullets: [
+            'Specific picks: which 3–5 launch first, and the order',
+            'Test structure scoped to your spend tier',
+            '3 upstream issues named — PDP, pixel, audiences',
+            "Refundable if the Loom isn't launchable. Risk lives on us.",
+          ],
+        }}
+      />
+    </section>
+
+    {/* Risk reversal callout */}
+    <section
+      class="rounded-2xl p-5 md:p-6"
+      style="background: color-mix(in oklch, var(--accent) 5%, var(--bg-elev)); border: 1px solid color-mix(in oklch, var(--accent) 35%, transparent);"
+    >
+      <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-2" style="color: var(--accent);">
+        Refund-backed
+      </div>
+      <p class="text-[15px] md:text-[16px] leading-snug max-w-[60ch]" style="color: var(--fg);">
+        If the Loom isn't something you'd hand to a paid-media operator and say "run this",
+        you get the $97 back. Same refund register as the 48-hour delivery promise.
+      </p>
+    </section>
+
+    {/* CTA */}
+    <section>
+      <div class="space-y-2">
+        {/* LS checkout overlay — uses card from OTO1 if available, else fresh checkout */}
+        <a
+          href="https://forty8.co/checkout/buy/338fbcd1-7b48-4375-b7f4-dc53625c99f6"
+          class="lemonsqueezy-button flex w-full items-center justify-center gap-2.5 rounded-2xl font-display font-medium text-[16px] md:text-[17px] py-4 md:py-[18px] transition-transform hover:-translate-y-[1px] active:translate-y-0"
+          style="background: var(--accent); color: var(--on-accent); box-shadow: 0 14px 40px -14px var(--accent);"
+        >
+          Add founder audit · +$97
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+            <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+          </svg>
+        </a>
+        <div class="text-center text-[12px] leading-snug" style="color: var(--fg-faint);">
+          One-click add. Card on file. Loom lands in your inbox alongside the 50 creatives, within 48 hours.
+        </div>
+      </div>
+
+      <a
+        href="/thanks"
+        class="block w-full text-center text-[13px] underline underline-offset-4 transition-colors mt-4"
+        style="color: var(--fg-dim);"
+        onmouseover="this.style.color='var(--fg)'"
+        onmouseout="this.style.color='var(--fg-dim)'"
+      >
+        No thanks — I'll launch the 50 alone
+      </a>
+    </section>
+
+  </div>
+
+  {/* Mobile-only sticky bottom bar — Pay CTA always one tap away */}
+  <div
+    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 py-3"
+    style="background: var(--bg-scrim); border-color: var(--border);"
+  >
+    <a
+      href="https://forty8.co/checkout/buy/338fbcd1-7b48-4375-b7f4-dc53625c99f6"
+      class="lemonsqueezy-button flex w-full items-center justify-center gap-2 rounded-xl font-display font-medium text-[15px] py-3.5 transition-transform active:translate-y-[1px]"
+      style="background: var(--accent); color: var(--on-accent); box-shadow: 0 6px 24px -8px var(--accent);"
+    >
+      Add founder audit · +$97
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+        <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+      </svg>
+    </a>
+  </div>
+
+</OtoLayout>

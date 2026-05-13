@@ -1,0 +1,169 @@
+---
+import OtoLayout from '../layouts/OtoLayout.astro';
+
+const timeline = [
+  {
+    badge: 'NOW',
+    active: true,
+    title: 'Order confirmed · creatives in production.',
+    body: 'Your store URL, hero product, and competitor URLs are queued for the next batch. Shuki reviews intake within the first 4 hours.',
+  },
+  {
+    badge: '≤48h',
+    title: '10 ad creatives delivered.',
+    body: 'Single email with a download link. PNGs at 4:5, named, organized, ready for Ads Manager. Most orders ship in under 24h.',
+  },
+  {
+    badge: '+1d',
+    title: 'One follow-up email. Then silence.',
+    body: "A single email about the Weekly Winner Iterator retainer. Ignore it and you'll never hear from us again. No sequence, no breakup email.",
+  },
+];
+---
+<OtoLayout
+  title="forty8 — order confirmed"
+  description="Your creatives are being built. Delivery in 48 hours."
+  step={4}
+>
+
+  <div class="space-y-10 md:space-y-12">
+
+    {/* Confirmation pill + hero */}
+    <section>
+      <span
+        class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em]"
+        style="background: color-mix(in oklch, var(--positive) 15%, transparent); color: var(--positive);"
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+          <path d="M1.5 5.5l2.5 2.5L9 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+        </svg>
+        Order confirmed
+      </span>
+
+      <h1
+        class="mt-5 font-display font-semibold tracking-[-0.035em] leading-[0.96] text-[38px] sm:text-[52px] md:text-[64px]"
+        style="color: var(--fg);"
+      >
+        Order in.
+        <span class="block" style="color: var(--accent);">Creatives in 48 hours.</span>
+      </h1>
+
+      <p class="mt-5 text-[16.5px] md:text-[18px] max-w-[55ch]" style="color: var(--fg-mute);">
+        Receipt sent to your inbox. Below is exactly what happens next — written so you can
+        forward this page to your team without translating anything.
+      </p>
+    </section>
+
+    {/* Timeline */}
+    <section>
+      <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-4 md:mb-5" style="color: var(--fg-faint);">
+        The next 49 hours
+      </div>
+      <ol class="relative space-y-3 md:space-y-4">
+        <span
+          aria-hidden="true"
+          class="absolute left-[19px] md:left-[23px] top-3 bottom-3 w-px"
+          style="background: var(--border);"
+        ></span>
+        {timeline.map((t) => (
+          <li class="relative pl-12 md:pl-14">
+            <span
+              class="absolute left-0 top-0 size-10 md:size-12 rounded-xl grid place-items-center font-mono text-[10.5px] uppercase tracking-[0.14em] ring-2"
+              style={t.active
+                ? 'background: var(--accent); color: var(--on-accent); --tw-ring-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in oklch, var(--accent) 20%, transparent);'
+                : 'background: var(--bg-elev); color: var(--fg-dim); --tw-ring-color: var(--border-strong);'
+              }
+            >
+              {t.badge}
+            </span>
+            <div class="rounded-2xl ring-1 p-5 md:p-6" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+              <h3 class="font-display font-semibold text-[17px] md:text-[19px] tracking-[-0.01em] leading-snug" style="color: var(--fg);">
+                {t.title}
+              </h3>
+              <p class="mt-2 text-[13.5px] md:text-[14.5px] leading-snug" style="color: var(--fg-mute);">
+                {t.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {/* Retainer tease */}
+    <section
+      class="rounded-2xl p-5 md:p-6"
+      style="background: color-mix(in oklch, var(--accent) 5%, var(--bg-elev)); border: 1px solid color-mix(in oklch, var(--accent) 30%, transparent);"
+    >
+      <div class="font-mono text-[10.5px] uppercase tracking-[0.14em] mb-2" style="color: var(--accent);">
+        Heads up
+      </div>
+      <h3 class="font-display font-semibold text-[20px] md:text-[24px] tracking-[-0.015em] leading-snug" style="color: var(--fg);">
+        You'll get one email about the Weekly Winner Iterator.
+      </h3>
+      <p class="mt-3 text-[14.5px] md:text-[15.5px] leading-snug max-w-[60ch]" style="color: var(--fg-mute);">
+        It's a $297/mo retainer: every Monday we ship 10–15 fresh iterations of last week's top
+        performers, plus a Loom on what to kill. Cancel anytime, no contract. Ignore the email and
+        you'll never hear from us again — same rule as the rest of this funnel.
+      </p>
+      <a
+        href="https://forty8.co/checkout/buy/cd4151c6-5f52-4f83-a525-7b8bee33e090"
+        class="lemonsqueezy-button mt-4 inline-flex items-center gap-1.5 text-[13px] font-mono uppercase tracking-[0.12em] transition-opacity hover:opacity-80"
+        style="color: var(--accent);"
+      >
+        Or skip the email — subscribe now
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+          <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+        </svg>
+      </a>
+    </section>
+
+    {/* Support + Refund 2-col */}
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+      <div class="rounded-2xl ring-1 p-5 md:p-6" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+        <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">Support</div>
+        <h3 class="mt-2 font-display font-medium text-[17px] md:text-[19px] tracking-[-0.01em]" style="color: var(--fg);">
+          Reply goes to the founder, not a ticket queue.
+        </h3>
+        <p class="mt-2 text-[13.5px] md:text-[14.5px] leading-snug" style="color: var(--fg-dim);">
+          Reply to any forty8 email and Shuki sees it. No CRM round-trip, no "a member of our
+          team will reach out."
+        </p>
+        <a
+          href="mailto:vip@forty8.co"
+          class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-mono uppercase tracking-[0.12em] hover:opacity-80 transition-opacity"
+          style="color: var(--fg);"
+        >
+          vip@forty8.co
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+            <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+          </svg>
+        </a>
+      </div>
+      <div class="rounded-2xl ring-1 p-5 md:p-6" style="background: var(--bg-elev); --tw-ring-color: var(--border);">
+        <div class="font-mono text-[10.5px] uppercase tracking-[0.14em]" style="color: var(--fg-faint);">Refund policy</div>
+        <h3 class="mt-2 font-display font-medium text-[17px] md:text-[19px] tracking-[-0.01em]" style="color: var(--fg);">
+          Full refund if we miss 48 hours.
+        </h3>
+        <p class="mt-2 text-[13.5px] md:text-[14.5px] leading-snug" style="color: var(--fg-dim);">
+          The 48 hours is the contract. If we miss, you get every dollar back — including the
+          OTOs. That's why we put it in the brand name.
+        </p>
+      </div>
+    </section>
+
+    {/* Back to LP */}
+    <section class="pt-2">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 text-[13.5px] font-mono uppercase tracking-[0.12em] transition-colors"
+        style="color: var(--fg-dim);"
+        onmouseover="this.style.color='var(--fg)'"
+        onmouseout="this.style.color='var(--fg-dim)'"
+      >
+        <span>←</span> Back to forty8.co
+      </a>
+    </section>
+
+  </div>
+
+</OtoLayout>

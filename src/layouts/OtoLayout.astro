@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  step: number;        // 1..4 — controls progress indicator
+  skipHref?: string;   // top-right skip link target (omit on /thanks)
+}
+
+const { title, description = '', step, skipHref } = Astro.props;
+const total = 4;
+---
+<!doctype html>
+<html lang="en" data-theme="operator">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  {/* Lemon Squeezy overlay checkout — auto-binds clicks on `.lemonsqueezy-button` */}
+  <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+</head>
+<body class="font-sans antialiased selection:bg-accent/30 selection:text-zinc-50">
+
+  {/* ============================================== HEADER (sticky) ===== */}
+  <header
+    class="sticky top-0 z-30 backdrop-blur border-b"
+    style="background: var(--bg-scrim); border-color: var(--border);"
+  >
+    <div class="mx-auto max-w-3xl px-5 md:px-8">
+      <div class="h-14 flex items-center justify-between gap-4">
+
+        {/* Wordmark */}
+        <a href="/" class="flex items-baseline gap-px text-[19px] font-display font-semibold tracking-[-0.02em] leading-none">
+          <span style="color: var(--fg);">forty</span>
+          <span style="color: var(--accent);">8</span>
+        </a>
+
+        {/* Step indicator with progress dashes */}
+        <div
+          class="flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.14em]"
+          style="color: var(--fg-faint);"
+        >
+          <span class="hidden sm:inline">Step</span>
+          <span style="color: var(--fg);">{step}</span>
+          <span>of {total}</span>
+          <span class="ml-2 flex items-center gap-1" aria-hidden="true">
+            {Array.from({ length: total }).map((_, i) => (
+              <span
+                class="block h-[3px] w-5 rounded-full"
+                style={`background: ${i < step ? 'var(--accent)' : 'var(--border-strong)'};`}
+              />
+            ))}
+          </span>
+        </div>
+
+        {/* Skip → / forty8.co on final page */}
+        {skipHref ? (
+          <a
+            href={skipHref}
+            class="text-[12.5px] font-mono uppercase tracking-[0.12em] transition-colors flex items-center gap-1.5"
+            style="color: var(--fg-dim);"
+            onmouseover="this.style.color='var(--fg)'"
+            onmouseout="this.style.color='var(--fg-dim)'"
+          >
+            <span>Skip</span>
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+              <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            </svg>
+          </a>
+        ) : (
+          <a
+            href="/"
+            class="text-[12.5px] font-mono uppercase tracking-[0.12em] transition-colors"
+            style="color: var(--fg-dim);"
+            onmouseover="this.style.color='var(--fg)'"
+            onmouseout="this.style.color='var(--fg-dim)'"
+          >
+            forty8.co
+          </a>
+        )}
+
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-5 md:px-8 pt-7 md:pt-12 pb-28 md:pb-28">
+    <slot />
+  </main>
+
+  <footer
+    class="border-t mx-auto max-w-3xl px-5 md:px-8 py-8 text-[12px]"
+    style="border-color: var(--border); color: var(--fg-faint);"
+  >
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <span>Independently operated · Not affiliated with Meta</span>
+      <div class="flex gap-4 font-mono uppercase tracking-[0.12em]">
+        <a href="/terms" class="transition-colors" style="color: var(--fg-faint);"
+           onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--fg-faint)'">Terms</a>
+        <a href="/refund" class="transition-colors" style="color: var(--fg-faint);"
+           onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--fg-faint)'">Refund</a>
+        <a href="mailto:shuki@lixfix.com" class="transition-colors" style="color: var(--fg-faint);"
+           onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--fg-faint)'">Support</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
