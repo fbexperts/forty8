@@ -168,9 +168,9 @@ const auditSteps = [
 
   </div>
 
-  {/* Mobile-only sticky bottom bar — Pay CTA always one tap away */}
+  {/* Mobile-only sticky bottom bar — Pay CTA + Skip option always one tap away */}
   <div
-    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 py-3"
+    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 pt-3 pb-3"
     style="background: var(--bg-scrim); border-color: var(--border);"
   >
     <a
@@ -182,6 +182,10 @@ const auditSteps = [
       <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
         <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
       </svg>
+    </a>
+    <a href="/thanks" class="block w-full text-center text-[12px] underline underline-offset-4 mt-2"
+       style="color: var(--fg-dim);">
+      No thanks — I'll launch alone
     </a>
   </div>
 

@@ -3,10 +3,20 @@ import OtoLayout from '../layouts/OtoLayout.astro';
 import Comparison from '../components/Comparison.astro';
 import { gallery } from '../data/gallery';
 
-// 10 unique thumbnails (left card); 50 cycled with a stride-7 shuffle (right card)
+// 10 unique thumbnails (left card) — first 10 from the gallery
+// 50 UNIQUE thumbnails (right card) — gallery (20) + hero samples (6) + collage extras (24) = 50
 const ALL_SLUGS = gallery.map((g) => g.slug);
-const tenThumbs   = ALL_SLUGS.slice(0, 10);
-const fiftyThumbs = Array.from({ length: 50 }, (_, i) => ALL_SLUGS[(i * 7) % ALL_SLUGS.length]);
+const tenThumbs: string[] = ALL_SLUGS.slice(0, 10).map((s) => `/images/gallery/${s}.jpg`);
+const fiftyThumbs: string[] = [
+  ...gallery.map((g) => `/images/gallery/${g.slug}.jpg`),
+  '/images/samples/skincare.jpg',
+  '/images/samples/supplement.jpg',
+  '/images/samples/pet.jpg',
+  '/images/samples/kitchen.jpg',
+  '/images/samples/apparel.jpg',
+  '/images/samples/fitness.jpg',
+  ...Array.from({ length: 24 }, (_, i) => `/images/collage/extra-${String(i + 1).padStart(2, '0')}.jpg`),
+];
 ---
 <OtoLayout
   title="forty8 — upgrade to 50 creatives ($9.99)"
@@ -57,10 +67,10 @@ const fiftyThumbs = Array.from({ length: 50 }, (_, i) => ALL_SLUGS[(i * 7) % ALL
             <span class="font-mono text-[11px]" style="color: var(--fg-faint);">$0</span>
           </div>
           <div class="grid grid-cols-5 gap-1 md:gap-1.5">
-            {tenThumbs.map((slug) => (
+            {tenThumbs.map((src) => (
               <figure class="aspect-[4/5] overflow-hidden rounded-sm" style="background: var(--bg);">
                 <img
-                  src={`/images/gallery/${slug}.jpg`}
+                  src={src}
                   alt=""
                   loading="lazy"
                   class="h-full w-full object-cover opacity-90"
@@ -89,10 +99,10 @@ const fiftyThumbs = Array.from({ length: 50 }, (_, i) => ALL_SLUGS[(i * 7) % ALL
             <span class="font-mono text-[11px]" style="color: var(--accent);">$9.99</span>
           </div>
           <div class="grid grid-cols-10 gap-0.5 md:gap-1">
-            {fiftyThumbs.map((slug) => (
+            {fiftyThumbs.map((src) => (
               <figure class="aspect-[4/5] overflow-hidden rounded-[2px]" style="background: var(--bg);">
                 <img
-                  src={`/images/gallery/${slug}.jpg`}
+                  src={src}
                   alt=""
                   loading="lazy"
                   class="h-full w-full object-cover"
@@ -215,9 +225,9 @@ const fiftyThumbs = Array.from({ length: 50 }, (_, i) => ALL_SLUGS[(i * 7) % ALL
 
   </div>
 
-  {/* Mobile-only sticky bottom bar — Pay CTA always one tap away */}
+  {/* Mobile-only sticky bottom bar — Pay CTA + Skip option always one tap away */}
   <div
-    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 py-3"
+    class="md:hidden fixed inset-x-0 bottom-0 z-30 backdrop-blur border-t px-4 pt-3 pb-3"
     style="background: var(--bg-scrim); border-color: var(--border);"
   >
     <a
@@ -229,6 +239,10 @@ const fiftyThumbs = Array.from({ length: 50 }, (_, i) => ALL_SLUGS[(i * 7) % ALL
       <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
         <path d="M1 5.5h9M6 1l4.5 4.5L6 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
       </svg>
+    </a>
+    <a href="/oto2" class="block w-full text-center text-[12px] underline underline-offset-4 mt-2"
+       style="color: var(--fg-dim);">
+      No thanks — keep the 10 only
     </a>
   </div>
 
