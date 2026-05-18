@@ -120,14 +120,50 @@ const total = 4;
     </div>
   </footer>
 
-  {/* Meta Pixel — InitiateCheckout when a Lemon Squeezy checkout button is clicked */}
+  {/* Meta Pixel funnel events — Lead on /oto1, InitiateCheckout on checkout click, Purchase on Lemon Squeezy success.
+      Keyed off the pathname (the `step` prop is funnel position, and /oto3 + /thanks share step 4). */}
   <script is:inline>
-    document.addEventListener('click', function (e) {
-      const t = e.target;
-      if (t && t.closest && t.closest('.lemonsqueezy-button') && typeof window.fbq === 'function') {
-        window.fbq('track', 'InitiateCheckout');
+    (function () {
+      var path = location.pathname.replace(/\/+$/, '') || '/';
+      var PURCHASE = {
+        '/oto1': { value: 9.99, contentName: 'OTO1 — 50 creatives', contentId: 'oto1' },
+        '/oto2': { value: 9.99, contentName: 'OTO2 — brief + 3 videos', contentId: 'oto2' },
+        '/oto3': { value: 97, contentName: 'OTO3 — founder audit', contentId: 'oto3' }
+      };
+      var purchase = PURCHASE[path] || null;
+
+      // InitiateCheckout — any Lemon Squeezy checkout button opens the overlay.
+      document.addEventListener('click', function (e) {
+        var t = e.target;
+        if (t && t.closest && t.closest('.lemonsqueezy-button') && typeof window.fbq === 'function') {
+          window.fbq('track', 'InitiateCheckout');
+        }
+      });
+
+      // Lead — reaching /oto1 means the intake form was submitted. Fire once per session.
+      if (path === '/oto1' && typeof window.fbq === 'function' && !sessionStorage.getItem('f8_lead')) {
+        window.fbq('track', 'Lead');
+        sessionStorage.setItem('f8_lead', '1');
       }
-    });
+
+      // Purchase — fired when the Lemon Squeezy checkout completes on this OTO page.
+      window.addEventListener('load', function () {
+        if (!purchase || !window.LemonSqueezy || typeof window.LemonSqueezy.Setup !== 'function') return;
+        window.LemonSqueezy.Setup({
+          eventHandler: function (ev) {
+            if (ev && ev.event === 'Checkout.Success' && typeof window.fbq === 'function') {
+              window.fbq('track', 'Purchase', {
+                value: purchase.value,
+                currency: 'USD',
+                content_name: purchase.contentName,
+                content_ids: [purchase.contentId],
+                content_type: 'product'
+              });
+            }
+          }
+        });
+      });
+    })();
   </script>
 
 </body>
