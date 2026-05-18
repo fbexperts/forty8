@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { gallery } from '../data/gallery';
+import MetaPixel from '../components/MetaPixel.astro';
 
 // ---- Data (locked copy from BRIEF.md, mirrored from design/redesign.jsx) ----
 
@@ -97,6 +98,8 @@ const heroSamplesRev = [...heroSamples].reverse();
     href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
+
+  <MetaPixel />
 </head>
 <body>
 
@@ -1051,6 +1054,13 @@ const heroSamplesRev = [...heroSamples].reverse();
     if (e.key === 'Escape')     close();
     if (e.key === 'ArrowRight') open(cur + 1);
     if (e.key === 'ArrowLeft')  open(cur - 1);
+  });
+</script>
+
+{/* Meta Pixel — Lead when the free-creatives intake form is submitted */}
+<script is:inline>
+  document.getElementById('claimForm')?.addEventListener('submit', function () {
+    if (typeof window.fbq === 'function') window.fbq('track', 'Lead');
   });
 </script>
 

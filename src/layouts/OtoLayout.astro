@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import MetaPixel from '../components/MetaPixel.astro';
 
 interface Props {
   title: string;
@@ -28,6 +29,8 @@ const total = 4;
     href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
+
+  <MetaPixel />
 
   {/* Lemon Squeezy overlay checkout — auto-binds clicks on `.lemonsqueezy-button` */}
   <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
@@ -116,6 +119,16 @@ const total = 4;
       </div>
     </div>
   </footer>
+
+  {/* Meta Pixel — InitiateCheckout when a Lemon Squeezy checkout button is clicked */}
+  <script is:inline>
+    document.addEventListener('click', function (e) {
+      const t = e.target;
+      if (t && t.closest && t.closest('.lemonsqueezy-button') && typeof window.fbq === 'function') {
+        window.fbq('track', 'InitiateCheckout');
+      }
+    });
+  </script>
 
 </body>
 </html>
